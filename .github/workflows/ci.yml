@@ -41,13 +41,13 @@ jobs:
           npx nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
 
       - name: Lint
-        run: npx nx affected --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3 || npx nx run-many --target=lint --all --parallel=3
 
       - name: Test
-        run: npx nx affected --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3 || npx nx run-many --target=test --all --parallel=3
 
       - name: Build
-        run: npx nx affected --target=build --parallel=3 --configuration=production
+        run: npx nx affected --target=build --parallel=3 --configuration=production || npx nx run-many --target=build --all --parallel=3 --configuration=production
 
       - name: Stop Nx Cloud
         if: always()
@@ -74,7 +74,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build affected projects
-        run: npx nx affected --target=build --parallel=3 --configuration=production
+        run: npx nx affected --target=build --parallel=3 --configuration=production || npx nx run-many --target=build --all --parallel=3 --configuration=production
 
       - name: Run E2E tests
-        run: npx nx affected --target=e2e --parallel=1
+        run: npx nx affected --target=e2e --parallel=1 || npx nx run-many --target=e2e --all --parallel=1

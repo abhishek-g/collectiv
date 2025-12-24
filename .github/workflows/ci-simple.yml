@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Lint affected projects
-        run: npx nx affected --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3 || npx nx run-many --target=lint --all --parallel=3
 
   test:
     name: Test
@@ -50,7 +50,7 @@ jobs:
         run: npm ci
 
       - name: Test affected projects
-        run: npx nx affected --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3 || npx nx run-many --target=test --all --parallel=3
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -78,7 +78,7 @@ jobs:
         run: npm ci
 
       - name: Build affected projects
-        run: npx nx affected --target=build --parallel=3 --configuration=production
+        run: npx nx affected --target=build --parallel=3 --configuration=production || npx nx run-many --target=build --all --parallel=3 --configuration=production
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -116,5 +116,5 @@ jobs:
           name: build-artifacts
 
       - name: Run E2E tests
-        run: npx nx affected --target=e2e --parallel=1
+        run: npx nx affected --target=e2e --parallel=1 || npx nx run-many --target=e2e --all --parallel=1
 
