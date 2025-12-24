@@ -50,7 +50,7 @@ jobs:
         run: npm ci
 
       - name: Test affected projects
-        run: npx nx affected --target=test --parallel=3 --ci --code-coverage
+        run: npx nx affected --target=test --parallel=3
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
