@@ -1,13 +1,21 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "..",
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
     "paths": {
       "@nx-angular-express/shared": ["libs/shared/src/index.ts"],
       "@nx-angular-express/user-service": ["libs/be/user-service/src/index.ts"],
       "@nx-angular-express/shared-components": ["libs/fe/shared-components/src/index.ts"]
     }
   },
-  "include": ["**/*.ts"],
+  "include": [],
   "exclude": ["node_modules"]
 }
