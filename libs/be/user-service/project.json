@@ -1,7 +1,7 @@
 {
   "name": "user-service",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/user-service/src",
+  "sourceRoot": "libs/be/user-service/src",
   "projectType": "library",
   "tags": ["shared", "user-service"],
   "targets": {
@@ -9,10 +9,10 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/user-service",
-        "main": "libs/user-service/src/index.ts",
-        "tsConfig": "libs/user-service/tsconfig.lib.json",
-        "assets": ["libs/user-service/*.md"]
+        "outputPath": "dist/libs/be/user-service",
+        "main": "libs/be/user-service/src/index.ts",
+        "tsConfig": "libs/be/user-service/tsconfig.lib.json",
+        "assets": ["libs/be/user-service/*.md"]
       }
     }
   }
