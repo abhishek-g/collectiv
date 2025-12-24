@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
 import { UserResponse, LoginUserInfo } from '@nx-angular-express/user-service';
+import { environment } from '../../environments/environment';
 
 export interface LoginRequest {
   email: string;
@@ -25,7 +26,7 @@ export interface LoginResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = '/api/users';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

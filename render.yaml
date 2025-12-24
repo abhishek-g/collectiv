@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: backend
+    env: node
+    rootDir: apps/backend
+    buildCommand: npm ci && npx nx build backend --configuration=production
+    startCommand: node dist/backend/main.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3333
+    healthCheckPath: /api/users
+    plan: free
+
