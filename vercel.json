@@ -1,9 +1,13 @@
 {
-  "buildCommand": "npm ci && npx nx build frontend --configuration=production",
+  "buildCommand": "npm ci && npx nx build backend --configuration=production && npx nx build frontend --configuration=production",
   "outputDirectory": "dist/frontend/browser",
   "installCommand": "npm ci",
   "framework": "angular",
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -27,6 +31,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/index.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }
-
