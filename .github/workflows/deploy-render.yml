@@ -1,20 +1,14 @@
-name: Deploy Backend to Render
+name: Deploy Backend to Render (disabled)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apps/backend/**'
-      - 'libs/be/**'
-      - 'libs/shared/**'
-      - '.github/workflows/deploy-render.yml'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: "20"
 
 jobs:
   deploy-backend:
+    if: ${{ false }} # disabled for now
     name: Deploy to Render
     runs-on: ubuntu-latest
     steps:

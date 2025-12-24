@@ -10,8 +10,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  affected:
-    name: Affected Projects Check
+  main:
+    name: PR Main
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,78 +31,9 @@ jobs:
       - name: Initialize Nx Cloud
         uses: nrwl/nx-set-shas@v4
 
-      - name: Show affected projects
-        run: npx nx show projects --affected
-
-  lint:
-    name: Lint Affected
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Initialize Nx Cloud
-        uses: nrwl/nx-set-shas@v4
-
-      - name: Lint affected projects
-        run: npx nx affected --target=lint --parallel=3
-
-  test:
-    name: Test Affected
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Initialize Nx Cloud
-        uses: nrwl/nx-set-shas@v4
-
-      - name: Test affected projects
-        run: npx nx affected --target=test --parallel=3
-
-  build:
-    name: Build Affected
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Initialize Nx Cloud
-        uses: nrwl/nx-set-shas@v4
-
-      - name: Build affected projects
-        run: npx nx affected --target=build --parallel=3 --configuration=production
+      - name: Lint, Test, Build (affected)
+        run: |
+          npx nx affected --target=lint --parallel=3 || npx nx run-many --target=lint --all --parallel=3
+          npx nx affected --target=test --parallel=3 || npx nx run-many --target=test --all --parallel=3
+          npx nx affected --target=build --parallel=3 --configuration=production || npx nx run-many --target=build --all --parallel=3 --configuration=production
 

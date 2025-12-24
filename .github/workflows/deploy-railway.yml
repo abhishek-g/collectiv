@@ -1,20 +1,14 @@
-name: Deploy Backend to Railway
+name: Deploy Backend to Railway (disabled)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apps/backend/**'
-      - 'libs/be/**'
-      - 'libs/shared/**'
-      - '.github/workflows/deploy-railway.yml'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: "20"
 
 jobs:
   deploy-backend:
+    if: ${{ false }} # disabled for now
     name: Deploy to Railway
     runs-on: ubuntu-latest
     steps:
