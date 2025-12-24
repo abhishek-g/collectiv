@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest, SignupRequest } from '../../services/auth.service';
+import { ToastService } from '@nx-angular-express/shared-components';
 import { $localize } from '@angular/localize/init';
 
 @Component({
@@ -40,7 +41,9 @@ export class AuthComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   switchTab(tab: 'login' | 'signup'): void {
@@ -59,18 +62,34 @@ export class AuthComponent {
 
     this.authService.login(this.loginForm).subscribe({
       next: (response) => {
-        if (response.success && response.data) {
-          this.authService.setToken(response.data.token);
-          // Redirect to home or dashboard
-          this.router.navigate(['/']);
-        } else {
-          this.loginError = response.error || $localize`:@@auth.loginFailed:Login failed`;
-        }
-        this.loginLoading = false;
+        // Defer all state changes to avoid ExpressionChangedAfterItHasBeenCheckedError
+        Promise.resolve().then(() => {
+          this.loginLoading = false;
+          if (response.success && response.data) {
+            this.authService.setToken(response.data.token);
+            // Show success toast - also deferred
+            Promise.resolve().then(() => {
+              this.toastService.success(
+                $localize`:@@auth.loginSuccess:Login Successful`,
+                $localize`:@@auth.welcomeBack:Welcome back!`
+              );
+            });
+            // Redirect to home or dashboard
+            this.router.navigate(['/']);
+          } else {
+            this.loginError = response.error || $localize`:@@auth.loginFailed:Login failed`;
+          }
+          this.cdr.markForCheck();
+        });
       },
       error: (error) => {
-        this.loginError = error.error?.error || $localize`:@@auth.loginFailedRetry:Login failed. Please try again.`;
-        this.loginLoading = false;
+        // Error toast is shown by interceptor, but we still set local error for form display
+        // Defer all state changes to avoid ExpressionChangedAfterItHasBeenCheckedError
+        Promise.resolve().then(() => {
+          this.loginLoading = false;
+          this.loginError = error.error?.error || $localize`:@@auth.loginFailedRetry:Login failed. Please try again.`;
+          this.cdr.markForCheck();
+        });
       },
     });
   }
@@ -104,27 +123,44 @@ export class AuthComponent {
     this.authService.signup(signupData).subscribe({
       next: (response) => {
         console.log('Signup response:', response);
-        if (response.success) {
-          this.signupSuccess = $localize`:@@auth.accountCreated:Account created successfully! Please login.`;
-          // Switch to login tab after 2 seconds
-          setTimeout(() => {
-            this.activeTab = 'login';
-            this.signupForm = {
-              name: '',
-              email: '',
-              password: '',
-              phone: '',
-            };
-          }, 2000);
-        } else {
-          this.signupError = response.error || $localize`:@@auth.signupFailed:Signup failed`;
-        }
-        this.signupLoading = false;
+        // Defer all state changes to avoid ExpressionChangedAfterItHasBeenCheckedError
+        Promise.resolve().then(() => {
+          this.signupLoading = false;
+          if (response.success) {
+            // Show success toast - also deferred
+            Promise.resolve().then(() => {
+              this.toastService.success(
+                $localize`:@@auth.accountCreated:Account Created`,
+                $localize`:@@auth.accountCreatedMessage:Your account has been created successfully! Please login.`
+              );
+            });
+            this.signupSuccess = $localize`:@@auth.accountCreated:Account created successfully! Please login.`;
+            // Switch to login tab after 2 seconds
+            setTimeout(() => {
+              this.activeTab = 'login';
+              this.signupForm = {
+                name: '',
+                email: '',
+                password: '',
+                phone: '',
+              };
+              this.cdr.markForCheck();
+            }, 2000);
+          } else {
+            this.signupError = response.error || $localize`:@@auth.signupFailed:Signup failed`;
+          }
+          this.cdr.markForCheck();
+        });
       },
       error: (error) => {
         console.error('Signup error:', error);
-        this.signupError = error.error?.error || error.message || $localize`:@@auth.signupFailedRetry:Signup failed. Please try again.`;
-        this.signupLoading = false;
+        // Error toast is shown by interceptor, but we still set local error for form display
+        // Defer all state changes to avoid ExpressionChangedAfterItHasBeenCheckedError
+        Promise.resolve().then(() => {
+          this.signupLoading = false;
+          this.signupError = error.error?.error || error.message || $localize`:@@auth.signupFailedRetry:Signup failed. Please try again.`;
+          this.cdr.markForCheck();
+        });
       },
     });
   }

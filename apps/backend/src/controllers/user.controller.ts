@@ -10,6 +10,18 @@ export class UserController {
   async createUser(req: Request, res: Response): Promise<void> {
     try {
       const userData: CreateUserDto = req.body;
+      
+      // Validate required fields
+      if (!userData.name || !userData.email || !userData.password) {
+        const response: HttpResponse<null> = {
+          success: false,
+          error: 'Name, email, and password are required',
+          statusCode: 400,
+        };
+        res.status(400).json(response);
+        return;
+      }
+
       const user = await userService.createUser(userData);
 
       const response: HttpResponse<typeof user> = {
@@ -21,13 +33,24 @@ export class UserController {
 
       res.status(201).json(response);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create user';
+      let errorMessage = 'Failed to create user';
+      let statusCode = 400;
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Check for duplicate email (MySQL error code 1062)
+        if (error.message.includes('Duplicate entry') || error.message.includes('ER_DUP_ENTRY')) {
+          errorMessage = 'Email already exists';
+          statusCode = 409;
+        }
+      }
+
       const response: HttpResponse<null> = {
         success: false,
         error: errorMessage,
-        statusCode: 400,
+        statusCode,
       };
-      res.status(400).json(response);
+      res.status(statusCode).json(response);
     }
   }
 
@@ -125,6 +148,18 @@ export class UserController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const loginData: LoginDto = req.body;
+      
+      // Validate input
+      if (!loginData.email || !loginData.password) {
+        const response: HttpResponse<null> = {
+          success: false,
+          error: 'Email and password are required',
+          statusCode: 400,
+        };
+        res.status(400).json(response);
+        return;
+      }
+
       const result = await userService.login(loginData);
 
       const response: HttpResponse<typeof result> = {
@@ -136,13 +171,28 @@ export class UserController {
 
       res.status(200).json(response);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      // Extract meaningful error message
+      let errorMessage = 'Login failed';
+      let statusCode = 401;
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Check for specific error types
+        if (error.message.includes('Invalid email or password')) {
+          statusCode = 401;
+        } else if (error.message.includes('not active') || error.message.includes('archived')) {
+          statusCode = 403;
+        } else if (error.message.includes('not found')) {
+          statusCode = 404;
+        }
+      }
+
       const response: HttpResponse<null> = {
         success: false,
         error: errorMessage,
-        statusCode: 401,
+        statusCode,
       };
-      res.status(401).json(response);
+      res.status(statusCode).json(response);
     }
   }
 
