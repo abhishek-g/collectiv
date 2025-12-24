@@ -8,11 +8,10 @@
 
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
-
-// Import routes and controllers directly from source
-// Vercel will compile TypeScript on deployment
+// Import routes - Vercel will compile TypeScript, so we import from source
+// The controller uses path aliases which will be resolved by Vercel's TypeScript compiler
 import userRoutes from '../apps/backend/src/routes/user.routes';
 
 // Load environment variables
