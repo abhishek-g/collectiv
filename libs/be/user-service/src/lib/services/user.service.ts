@@ -2,7 +2,7 @@ import pool from '../config/database';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { RowDataPacket } from 'mysql2';
-import { UserRow, CreateUserDto, UpdateUserDto, LoginDto, UserResponse } from '../models/user.model';
+import { UserRow, CreateUserDto, UpdateUserDto, LoginDto, UserResponse, LoginUserInfo } from '../models/user.model';
 import { UserRole, UserStatus } from '@nx-angular-express/shared';
 
 export class UserService {
@@ -168,7 +168,7 @@ export class UserService {
   /**
    * Login user
    */
-  async login(loginData: LoginDto): Promise<{ user: UserResponse; token: string }> {
+  async login(loginData: LoginDto): Promise<{ user: LoginUserInfo; token: string }> {
     const user = await this.getUserByEmail(loginData.email);
 
     if (!user) {
@@ -192,8 +192,13 @@ export class UserService {
     // Generate JWT token
     const token = this.generateToken(user.id);
 
+    // Return minimal user info for security (only id, role, status)
     return {
-      user: this.mapToUserResponse(user),
+      user: {
+        id: user.id,
+        role: user.role,
+        status: user.status,
+      },
       token,
     };
   }

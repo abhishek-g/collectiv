@@ -1,0 +1,167 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                [class.active]="activeTab === 'login'"
+                (click)="switchTab('login')"
+                type="button"
+              >
+                Login
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                [class.active]="activeTab === 'signup'"
+                (click)="switchTab('signup')"
+                type="button"
+              >
+                Sign Up
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body p-4">
+          <!-- Login Form -->
+          <div *ngIf="activeTab === 'login'" class="tab-content">
+            <h4 class="mb-4">Welcome Back</h4>
+
+            <div *ngIf="loginError" class="alert alert-danger" role="alert">
+              {{ loginError }}
+            </div>
+
+            <form (ngSubmit)="onLogin()">
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">Email address</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="loginEmail"
+                  [(ngModel)]="loginForm.email"
+                  name="loginEmail"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="loginPassword"
+                  [(ngModel)]="loginForm.password"
+                  name="loginPassword"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                [disabled]="loginLoading"
+              >
+                <span
+                  *ngIf="loginLoading"
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                {{ loginLoading ? 'Logging in...' : 'Login' }}
+              </button>
+            </form>
+          </div>
+
+          <!-- Signup Form -->
+          <div *ngIf="activeTab === 'signup'" class="tab-content">
+            <h4 class="mb-4">Create Account</h4>
+
+            <div *ngIf="signupError" class="alert alert-danger" role="alert">
+              {{ signupError }}
+            </div>
+
+            <div *ngIf="signupSuccess" class="alert alert-success" role="alert">
+              {{ signupSuccess }}
+            </div>
+
+            <form (ngSubmit)="onSignup()">
+              <div class="mb-3">
+                <label for="signupName" class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="signupName"
+                  [(ngModel)]="signupForm.name"
+                  name="signupName"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="signupEmail" class="form-label">Email address</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="signupEmail"
+                  [(ngModel)]="signupForm.email"
+                  name="signupEmail"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="signupPassword" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="signupPassword"
+                  [(ngModel)]="signupForm.password"
+                  name="signupPassword"
+                  placeholder="Enter your password (min 6 characters)"
+                  required
+                  minlength="6"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="signupPhone" class="form-label">Phone (Optional)</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="signupPhone"
+                  [(ngModel)]="signupForm.phone"
+                  name="signupPhone"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-success w-100"
+                [disabled]="signupLoading"
+              >
+                <span
+                  *ngIf="signupLoading"
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                {{ signupLoading ? 'Creating account...' : 'Sign Up' }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

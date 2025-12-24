@@ -4,6 +4,7 @@
 
 import express from 'express';
 import * as path from 'path';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
 import userRoutes from './routes/user.routes';
@@ -14,6 +15,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
+app.use(cors({
+  origin: process.env['FRONTEND_URL'] || 'http://localhost:4200',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));

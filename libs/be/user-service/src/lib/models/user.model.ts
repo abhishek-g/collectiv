@@ -57,3 +57,10 @@ export interface LoginDto {
 
 export type UserResponse = Omit<User, 'password'>;
 
+// Minimal user info for login response
+export interface LoginUserInfo {
+  id: string;
+  role: UserRole;
+  status: UserStatus;
+}
+

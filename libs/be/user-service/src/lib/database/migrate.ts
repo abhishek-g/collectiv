@@ -3,7 +3,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 async function runMigrations(): Promise<void> {
-  const migrationsDir = path.join(__dirname, 'migrations');
+  // Find migrations directory relative to workspace root
+  // Works in both development and production builds
+  const workspaceRoot = process.cwd();
+  const migrationsDir = path.join(
+    workspaceRoot,
+    'libs/be/user-service/src/lib/database/migrations'
+  );
+
+  // Check if migrations directory exists
+  if (!fs.existsSync(migrationsDir)) {
+    console.error(`❌ Migrations directory not found: ${migrationsDir}`);
+    throw new Error('Migrations directory not found');
+  }
+
   const files = fs.readdirSync(migrationsDir).sort();
 
   console.log('🔄 Running database migrations...');
