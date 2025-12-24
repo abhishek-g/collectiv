@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest, SignupRequest } from '../../services/auth.service';
+import { $localize } from '@angular/localize/init';
 
 @Component({
   selector: 'app-auth',
@@ -49,7 +50,7 @@ export class AuthComponent {
 
   onLogin(): void {
     if (!this.loginForm.email || !this.loginForm.password) {
-      this.loginError = 'Please fill in all fields';
+      this.loginError = $localize`:@@auth.fillAllFields:Please fill in all fields`;
       return;
     }
 
@@ -63,12 +64,12 @@ export class AuthComponent {
           // Redirect to home or dashboard
           this.router.navigate(['/']);
         } else {
-          this.loginError = response.error || 'Login failed';
+          this.loginError = response.error || $localize`:@@auth.loginFailed:Login failed`;
         }
         this.loginLoading = false;
       },
       error: (error) => {
-        this.loginError = error.error?.error || 'Login failed. Please try again.';
+        this.loginError = error.error?.error || $localize`:@@auth.loginFailedRetry:Login failed. Please try again.`;
         this.loginLoading = false;
       },
     });
@@ -76,12 +77,12 @@ export class AuthComponent {
 
   onSignup(): void {
     if (!this.signupForm.name || !this.signupForm.email || !this.signupForm.password) {
-      this.signupError = 'Please fill in all required fields';
+      this.signupError = $localize`:@@auth.fillRequiredFields:Please fill in all required fields`;
       return;
     }
 
     if (this.signupForm.password.length < 6) {
-      this.signupError = 'Password must be at least 6 characters';
+      this.signupError = $localize`:@@auth.passwordMinLength:Password must be at least 6 characters`;
       return;
     }
 
@@ -104,7 +105,7 @@ export class AuthComponent {
       next: (response) => {
         console.log('Signup response:', response);
         if (response.success) {
-          this.signupSuccess = 'Account created successfully! Please login.';
+          this.signupSuccess = $localize`:@@auth.accountCreated:Account created successfully! Please login.`;
           // Switch to login tab after 2 seconds
           setTimeout(() => {
             this.activeTab = 'login';
@@ -116,13 +117,13 @@ export class AuthComponent {
             };
           }, 2000);
         } else {
-          this.signupError = response.error || 'Signup failed';
+          this.signupError = response.error || $localize`:@@auth.signupFailed:Signup failed`;
         }
         this.signupLoading = false;
       },
       error: (error) => {
         console.error('Signup error:', error);
-        this.signupError = error.error?.error || error.message || 'Signup failed. Please try again.';
+        this.signupError = error.error?.error || error.message || $localize`:@@auth.signupFailedRetry:Signup failed. Please try again.`;
         this.signupLoading = false;
       },
     });

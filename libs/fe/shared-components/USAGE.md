@@ -166,6 +166,42 @@ The component uses Bootstrap 5 classes and Bootstrap Icons. Make sure you have:
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
    ```
 
+## Internationalization (i18n)
+
+The toast components support Angular i18n for all static text elements. The following elements are marked for translation:
+
+- **Close button**: The dismiss button's `aria-label` attribute uses i18n with ID `@@toast.closeButton`
+
+### Extracting i18n Messages
+
+To extract i18n messages from the library, run:
+
+```bash
+ng extract-i18n --output-path src/locale
+```
+
+This will create translation files (e.g., `messages.xlf`) containing the translatable strings.
+
+### Using Translated Messages
+
+When you provide `title` and `body` to the toast service, you can use Angular's i18n pipe or `$localize`:
+
+```typescript
+import { $localize } from '@angular/localize/init';
+
+// Using $localize
+this.toastService.success(
+  $localize`:@@toast.successTitle:Success`,
+  $localize`:@@toast.successBody:Operation completed successfully`
+);
+
+// Or using i18n pipe in templates
+this.toastService.success(
+  'Success' | i18n,
+  'Operation completed' | i18n
+);
+```
+
 ## Features
 
 - ✅ Modern Angular features (signals, standalone components)
@@ -176,5 +212,6 @@ The component uses Bootstrap 5 classes and Bootstrap Icons. Make sure you have:
 - ✅ Manual dismissal
 - ✅ EventEmitter-based dismissal handling
 - ✅ Multiple toast support
+- ✅ Internationalization (i18n) support
 - ✅ Fully tested
 
