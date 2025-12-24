@@ -1,5 +1,5 @@
-import { isValidEmail, isNotEmpty, isValidUUID } from '../helpers';
-import { ApiResponse } from '../types';
+import { isValidEmail, isNotEmpty, isValidUUID } from './helpers';
+import { HttpResponse } from './types';
 
 describe('shared library', () => {
   describe('validation helpers', () => {
@@ -23,13 +23,15 @@ describe('shared library', () => {
   });
 
   describe('types', () => {
-    it('should have ApiResponse type', () => {
-      const response: ApiResponse<string> = {
+    it('should have HttpResponse type', () => {
+      const response: HttpResponse<string> = {
         success: true,
         data: 'test',
+        statusCode: 200,
       };
       expect(response.success).toBe(true);
       expect(response.data).toBe('test');
+      expect(response.statusCode).toBe(200);
     });
   });
 });
