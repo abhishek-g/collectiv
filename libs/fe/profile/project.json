@@ -1,0 +1,14 @@
+{
+  "name": "profile",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/fe/profile/src",
+  "prefix": "shared",
+  "projectType": "library",
+  "tags": ["frontend", "feature", "profile"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

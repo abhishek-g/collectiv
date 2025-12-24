@@ -189,8 +189,8 @@ export class UserService {
       throw new Error('Invalid email or password');
     }
 
-    // Generate JWT token
-    const token = this.generateToken(user.id);
+    // Generate JWT token with role
+    const token = this.generateToken(user.id, user.role);
 
     // Return minimal user info for security (only id, role, status)
     return {
@@ -233,10 +233,10 @@ export class UserService {
   /**
    * Generate JWT token
    */
-  private generateToken(userId: string): string {
+  private generateToken(userId: string, role: string): string {
     const secret = process.env['JWT_SECRET'] || 'your-secret-key-change-this-in-production';
     const expiresIn = process.env['JWT_EXPIRES_IN'] || '7d';
-    return jwt.sign({ userId }, secret, { expiresIn } as jwt.SignOptions);
+    return jwt.sign({ userId, role }, secret, { expiresIn } as jwt.SignOptions);
   }
 }
 

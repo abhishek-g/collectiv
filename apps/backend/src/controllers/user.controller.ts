@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { userService, CreateUserDto, UpdateUserDto, LoginDto } from '@nx-angular-express/user-service';
+import jwt from 'jsonwebtoken';
 import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
 
 export class UserController {
@@ -152,11 +153,29 @@ export class UserController {
    */
   async getProfile(req: Request, res: Response): Promise<void> {
     try {
-      // TODO: Extract userId from JWT token in middleware
-      interface RequestWithUserId extends Request {
-        userId?: string;
+      // Extract userId from Authorization bearer token or fallback to route param
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+      let userId = req.params.id;
+
+      if (token) {
+        try {
+          const secret = process.env['JWT_SECRET'] || 'your-secret-key-change-this-in-production';
+          const payload = jwt.verify(token, secret) as { userId?: string };
+          if (payload?.userId) {
+            userId = payload.userId;
+          }
+        } catch (err) {
+          const response: HttpResponse<null> = {
+            success: false,
+            error: 'Invalid or expired token',
+            statusCode: 401,
+          };
+          res.status(401).json(response);
+          return;
+        }
       }
-      const userId = (req as RequestWithUserId).userId || req.params.id;
 
       if (!userId) {
         const response: HttpResponse<null> = {

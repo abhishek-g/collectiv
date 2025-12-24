@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
+import { HttpResponse } from '@nx-angular-express/shared';
 import { UserResponse, LoginUserInfo } from '@nx-angular-express/user-service';
 import { environment } from '../../environments/environment';
 
@@ -26,9 +26,8 @@ export interface LoginResponse {
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
-
-  constructor(private http: HttpClient) { }
 
   login(credentials: LoginRequest): Observable<HttpResponse<LoginResponse>> {
     return this.http.post<HttpResponse<LoginResponse>>(
@@ -61,6 +60,26 @@ export class AuthService {
   // Get token from localStorage
   getToken(): string | null {
     return localStorage.getItem('auth_token');
+  }
+
+  // Decode JWT payload (unsafe decode without signature verification)
+  getTokenPayload<T = any>(): T | null {
+    const token = this.getToken();
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    try {
+      const payload = JSON.parse(atob(parts[1]));
+      return payload as T;
+    } catch {
+      return null;
+    }
+  }
+
+  // Get role from JWT payload
+  getRole(): string | null {
+    const payload = this.getTokenPayload<{ role?: string }>();
+    return payload?.role ?? null;
   }
 
   // Remove token from localStorage
