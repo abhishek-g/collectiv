@@ -1,14 +1,14 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+import * as mysql from 'mysql2/promise';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306', 10),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'Root@123',
-  database: process.env.DB_NAME || 'user_service_db',
+  host: process.env['DB_HOST'] || 'localhost',
+  port: parseInt(process.env['DB_PORT'] || '3306', 10),
+  user: process.env['DB_USER'] || 'root',
+  password: process.env['DB_PASSWORD'] || 'Root@123',
+  database: process.env['DB_NAME'] || 'user_service_db',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -38,7 +38,7 @@ export async function createDatabaseIfNotExists(): Promise<void> {
   const tempPool = mysql.createPool(tempConfig);
 
   try {
-    const [result] = await tempPool.execute(
+    await tempPool.execute(
       `CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
     console.log(`✅ Database '${dbConfig.database}' ready`);

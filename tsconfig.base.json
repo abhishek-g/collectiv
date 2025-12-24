@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nx-angular-express/shared": ["libs/shared/src/index.ts"]
+      "@nx-angular-express/shared": ["libs/shared/src/index.ts"],
+      "@nx-angular-express/user-service": ["libs/user-service/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -5,8 +5,7 @@
 import express from 'express';
 import * as path from 'path';
 import dotenv from 'dotenv';
-import { createDatabaseIfNotExists, testConnection } from './config/database';
-import runMigrations from './database/migrate';
+import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
 import userRoutes from './routes/user.routes';
 
 // Load environment variables

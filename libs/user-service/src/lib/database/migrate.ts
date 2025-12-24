@@ -16,12 +16,13 @@ async function runMigrations(): Promise<void> {
       try {
         await pool.query(sql);
         console.log(`✅ Migration ${file} completed`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Ignore "Table already exists" errors
-        if (error.code === 'ER_TABLE_EXISTS_ERROR') {
+        const mysqlError = error as { code?: string; message?: string };
+        if (mysqlError.code === 'ER_TABLE_EXISTS_ERROR') {
           console.log(`⏭️  Migration ${file} already applied`);
         } else {
-          console.error(`❌ Migration ${file} failed:`, error.message);
+          console.error(`❌ Migration ${file} failed:`, mysqlError.message || 'Unknown error');
           throw error;
         }
       }

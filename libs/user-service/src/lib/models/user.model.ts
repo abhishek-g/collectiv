@@ -55,5 +55,5 @@ export interface LoginDto {
   password: string;
 }
 
-export interface UserResponse extends Omit<User, 'password'> {}
+export type UserResponse = Omit<User, 'password'>;
 

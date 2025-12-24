@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import userService from '../services/user.service';
-import { CreateUserDto, UpdateUserDto, LoginDto } from '../models/user.model';
+import { userService, CreateUserDto, UpdateUserDto, LoginDto } from '@nx-angular-express/user-service';
 import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
 
 export class UserController {
@@ -21,10 +20,11 @@ export class UserController {
       };
 
       res.status(201).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create user';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Failed to create user',
+        error: errorMessage,
         statusCode: 400,
       };
       res.status(400).json(response);
@@ -49,10 +49,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update user';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Failed to update user',
+        error: errorMessage,
         statusCode: 400,
       };
       res.status(400).json(response);
@@ -75,10 +76,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to archive user';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Failed to archive user',
+        error: errorMessage,
         statusCode: 400,
       };
       res.status(400).json(response);
@@ -105,10 +107,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to list users';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Failed to list users',
+        error: errorMessage,
         statusCode: 500,
       };
       res.status(500).json(response);
@@ -132,10 +135,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Login failed',
+        error: errorMessage,
         statusCode: 401,
       };
       res.status(401).json(response);
@@ -149,7 +153,10 @@ export class UserController {
   async getProfile(req: Request, res: Response): Promise<void> {
     try {
       // TODO: Extract userId from JWT token in middleware
-      const userId = (req as any).userId || req.params.id;
+      interface RequestWithUserId extends Request {
+        userId?: string;
+      }
+      const userId = (req as RequestWithUserId).userId || req.params.id;
 
       if (!userId) {
         const response: HttpResponse<null> = {
@@ -170,10 +177,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get profile';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Failed to get profile',
+        error: errorMessage,
         statusCode: 404,
       };
       res.status(404).json(response);
@@ -194,10 +202,11 @@ export class UserController {
       };
 
       res.status(200).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Signout failed';
       const response: HttpResponse<null> = {
         success: false,
-        error: error.message || 'Signout failed',
+        error: errorMessage,
         statusCode: 500,
       };
       res.status(500).json(response);

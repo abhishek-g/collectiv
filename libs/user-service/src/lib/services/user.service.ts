@@ -1,6 +1,7 @@
 import pool from '../config/database';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { RowDataPacket } from 'mysql2';
 import { UserRow, CreateUserDto, UpdateUserDto, LoginDto, UserResponse } from '../models/user.model';
 import { UserRole, UserStatus } from '@nx-angular-express/shared';
 
@@ -12,7 +13,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const userId = this.generateUUID();
 
-    const [result] = await pool.execute<UserRow[]>(
+    await pool.execute<UserRow[]>(
       `INSERT INTO users (
         id, name, email, password, role, status, phone, address, city, state, zip, country
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -68,7 +69,7 @@ export class UserService {
    */
   async updateUser(id: string, userData: UpdateUserDto): Promise<UserResponse> {
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: (string | boolean | null)[] = [];
 
     if (userData.name) {
       updates.push('name = ?');
@@ -134,7 +135,7 @@ export class UserService {
   /**
    * List users with pagination
    */
-  async listUsers(page: number = 1, limit: number = 10): Promise<{
+  async listUsers(page = 1, limit = 10): Promise<{
     users: UserResponse[];
     total: number;
     page: number;
@@ -144,10 +145,10 @@ export class UserService {
     const offset = (page - 1) * limit;
 
     // Get total count
-    const [countResult] = await pool.execute<{ total: number }[]>(
+    const [countResult] = await pool.execute<RowDataPacket[]>(
       'SELECT COUNT(*) as total FROM users WHERE isDeleted = FALSE'
     );
-    const total = countResult[0]?.total || 0;
+    const total = (countResult[0] as { total: number })?.total || 0;
 
     // Get users
     const [rows] = await pool.execute<UserRow[]>(
@@ -156,7 +157,7 @@ export class UserService {
     );
 
     return {
-      users: rows.map((row) => this.mapToUserResponse(row)),
+      users: rows.map((row: UserRow) => this.mapToUserResponse(row)),
       total,
       page,
       limit,
@@ -188,7 +189,7 @@ export class UserService {
       throw new Error('Invalid email or password');
     }
 
-    // Generate JWT token (we'll implement this in auth service)
+    // Generate JWT token
     const token = this.generateToken(user.id);
 
     return {
@@ -208,6 +209,7 @@ export class UserService {
    * Map database row to user response (without password)
    */
   private mapToUserResponse(row: UserRow): UserResponse {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userResponse } = row;
     return userResponse as UserResponse;
   }
@@ -227,8 +229,9 @@ export class UserService {
    * Generate JWT token
    */
   private generateToken(userId: string): string {
-    const secret = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
-    return jwt.sign({ userId }, secret, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+    const secret = process.env['JWT_SECRET'] || 'your-secret-key-change-this-in-production';
+    const expiresIn = process.env['JWT_EXPIRES_IN'] || '7d';
+    return jwt.sign({ userId }, secret, { expiresIn } as jwt.SignOptions);
   }
 }
 
