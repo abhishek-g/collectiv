@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '@nx-angular-express/shared-components';
-import { $localize } from '@angular/localize/init';
+// $localize is provided as a polyfill in project.json - no import needed
 
 /**
  * HTTP Error Interceptor

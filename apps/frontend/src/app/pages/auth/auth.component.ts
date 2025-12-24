@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest, SignupRequest } from '../../services/auth.service';
 import { ToastService } from '@nx-angular-express/shared-components';
-import { $localize } from '@angular/localize/init';
+// $localize is provided as a polyfill in project.json - no import needed
 
 @Component({
   selector: 'app-auth',
