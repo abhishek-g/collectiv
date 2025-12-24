@@ -1,0 +1,16 @@
+// Minimal custom styles - using Bootstrap classes as much as possible
+:host {
+  display: block;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.toast-header {
+  i {
+    font-size: 1.25rem;
+  }
+}
+

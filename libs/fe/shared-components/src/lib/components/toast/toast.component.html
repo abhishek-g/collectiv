@@ -1,0 +1,29 @@
+<div
+  class="toast"
+  [class.text-bg-success]="type === 'success'"
+  [class.text-bg-danger]="type === 'error'"
+  [class.text-bg-warning]="type === 'warning'"
+  [class.text-bg-info]="type === 'info'"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  [attr.data-autohide]="autohide"
+  [attr.data-delay]="delay"
+>
+  <div class="toast-header">
+    <i class="bi" [ngClass]="iconClass()" aria-hidden="true"></i>
+    <strong class="me-auto ms-2">{{ title }}</strong>
+    @if (dismissible) {
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="onDismissClick()"
+      ></button>
+    }
+  </div>
+  <div class="toast-body">
+    {{ body }}
+  </div>
+</div>
+

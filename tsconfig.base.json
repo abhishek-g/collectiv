@@ -16,7 +16,10 @@
     "baseUrl": ".",
     "paths": {
       "@nx-angular-express/shared": ["libs/shared/src/index.ts"],
-      "@nx-angular-express/user-service": ["libs/be/user-service/src/index.ts"]
+      "@nx-angular-express/user-service": ["libs/be/user-service/src/index.ts"],
+      "@nx-angular-express/shared-components": [
+        "libs/fe/shared-components/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

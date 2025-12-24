@@ -1,0 +1,13 @@
+{
+  "name": "shared-components",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/fe/shared-components/src",
+  "prefix": "shared",
+  "projectType": "library",
+  "tags": ["shared", "frontend", "components"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
