@@ -1,0 +1,13 @@
+{
+  "name": "community-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/be/community-service/src",
+  "projectType": "library",
+  "tags": ["backend", "community"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

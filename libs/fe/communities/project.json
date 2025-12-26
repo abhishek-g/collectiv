@@ -1,0 +1,14 @@
+{
+  "name": "communities",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/fe/communities/src",
+  "projectType": "library",
+  "prefix": "shared",
+  "tags": ["frontend", "feature", "communities"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

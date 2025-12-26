@@ -8,6 +8,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
 import userRoutes from './routes/user.routes';
+import communityRoutes from './routes/community.routes';
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+// Serve uploaded community images (local persistence)
+const communityImagesPath = path.join(process.cwd(), 'apps/backend/src/assets/community-images');
+app.use('/assets/community-images', express.static(communityImagesPath));
 
 // Health check endpoint
 app.get('/api', (req, res) => {
@@ -36,6 +40,7 @@ app.get('/api/health', (req, res) => {
 
 // User routes
 app.use('/api/users', userRoutes);
+app.use('/api/communities', communityRoutes);
 
 // Initialize database and start server
 async function startServer() {

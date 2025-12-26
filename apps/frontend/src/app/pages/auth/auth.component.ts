@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -73,7 +73,7 @@ export class AuthComponent {
               );
             });
             // Redirect to home or dashboard
-            this.router.navigate(['/']);
+            this.router.navigate(['/communities']);
           } else {
             this.loginError = response.error || $localize`:@@auth.loginFailed:Login failed`;
           }
