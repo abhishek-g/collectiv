@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/dist/api/index.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",
@@ -33,7 +33,7 @@
     }
   ],
   "functions": {
-    "dist/api/index.js": {
+    "api/index.js": {
       "maxDuration": 10,
       "includeFiles": "dist/backend/**, dist/libs/be/user-service/**"
     }

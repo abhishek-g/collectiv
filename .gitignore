@@ -47,6 +47,6 @@ __screenshots__/
 
 vitest.config.*.timestamp*
 
-# Vercel API bundle (generated during build, already covered by dist/)
-# api/index.js
-# api/index.js.map
+# Vercel API bundle (generated during build)
+api/index.js
+api/index.js.map
