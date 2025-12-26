@@ -7,10 +7,10 @@ dotenv.config();
 const dbConfig = {
   host: process.env['DB_HOST'] || process.env['MYSQLHOST'] || process.env['MYSQL_HOST'] || 'localhost',
   port: parseInt(
-    process.env['DB_PORT'] || 
-    process.env['MYSQLPORT'] || 
-    process.env['MYSQL_PORT'] || 
-    '3306', 
+    process.env['DB_PORT'] ||
+    process.env['MYSQLPORT'] ||
+    process.env['MYSQL_PORT'] ||
+    '3306',
     10
   ),
   user: process.env['DB_USER'] || process.env['MYSQLUSER'] || process.env['MYSQL_USER'] || 'root',
