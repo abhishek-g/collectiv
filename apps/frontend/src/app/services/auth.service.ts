@@ -26,9 +26,8 @@ export interface LoginResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl;
-
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   login(credentials: LoginRequest): Observable<HttpResponse<LoginResponse>> {
     return this.http.post<HttpResponse<LoginResponse>>(
