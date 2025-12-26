@@ -1,5 +1,5 @@
 {
-  "name": "@nx-angular-express/shared",
+  "name": "@nx-angular-express/community-service",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",
@@ -13,3 +13,4 @@
     "@nx/vite": "*"
   }
 }
+

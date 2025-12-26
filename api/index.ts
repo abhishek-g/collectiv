@@ -13,6 +13,7 @@ import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-an
 // Import routes - Vercel will compile TypeScript, so we import from source
 // The controller uses path aliases which will be resolved by Vercel's TypeScript compiler
 import userRoutes from '../apps/backend/src/routes/user.routes';
+import communityRoutes from '../apps/backend/src/routes/community.routes';
 
 // Load environment variables
 dotenv.config();
@@ -99,6 +100,7 @@ app.get('/api/health', (req, res) => {
 
 // User routes
 app.use('/api/users', userRoutes);
+app.use('/api/communities', communityRoutes);
 
 // Initialize database on cold start (Vercel serverless)
 let dbInitialized = false;

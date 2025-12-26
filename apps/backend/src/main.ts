@@ -8,6 +8,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
 import userRoutes from './routes/user.routes';
+import communityRoutes from './routes/community.routes';
 
 // Load environment variables
 dotenv.config();
@@ -36,6 +37,7 @@ app.get('/api/health', (req, res) => {
 
 // User routes
 app.use('/api/users', userRoutes);
+app.use('/api/communities', communityRoutes);
 
 // Initialize database and start server
 async function startServer() {

@@ -13,7 +13,8 @@
     "paths": {
       "@nx-angular-express/shared": ["libs/shared/src/index.ts"],
       "@nx-angular-express/user-service": ["libs/be/user-service/src/index.ts"],
-      "@nx-angular-express/shared-components": ["libs/fe/shared-components/src/index.ts"]
+      "@nx-angular-express/shared-components": ["libs/fe/shared-components/src/index.ts"],
+      "@nx-angular-express/community-service": ["libs/be/community-service/src/index.ts"]
     }
   },
   "include": [],
