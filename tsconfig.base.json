@@ -19,7 +19,8 @@
       "@nx-angular-express/user-service": ["libs/be/user-service/src/index.ts"],
       "@nx-angular-express/shared-components": [
         "libs/fe/shared-components/src/index.ts"
-      ]
+      ],
+      "@nx-angular-express/profile": ["libs/fe/profile/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

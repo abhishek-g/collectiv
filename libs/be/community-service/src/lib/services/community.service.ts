@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { RowDataPacket } from 'mysql2';
 import {
   Community,
   CommunityMember,
@@ -7,7 +8,7 @@ import {
 import { pool } from '@nx-angular-express/user-service';
 import { AddMemberDto, CreateCommunityDto, UpdateCommunityDto } from '../dto/community.dto';
 
-type CommunityRow = {
+type CommunityRow = RowDataPacket & {
   id: string;
   name: string;
   description: string | null;
@@ -18,7 +19,7 @@ type CommunityRow = {
   updated_at: Date;
 };
 
-type CommunityMemberRow = {
+type CommunityMemberRow = RowDataPacket & {
   community_id: string;
   user_id: string;
   role: string;

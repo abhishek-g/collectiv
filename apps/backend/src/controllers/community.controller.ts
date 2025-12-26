@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { communityService, CreateCommunityDto, UpdateCommunityDto, AddMemberDto } from '@nx-angular-express/community-service';
+import { communityService, CreateCommunityDto, UpdateCommunityDto, AddMemberDto } from '../../../../libs/be/community-service/src';
 import { HttpResponse, Community } from '@nx-angular-express/shared';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { upload } from '../middleware/upload.middleware';

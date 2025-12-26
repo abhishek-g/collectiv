@@ -6,6 +6,7 @@ export interface AuthenticatedRequest extends Request {
     userId: string;
     role?: string;
   };
+  file?: Express.Multer.File;
 }
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {

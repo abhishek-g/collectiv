@@ -73,7 +73,7 @@ export class AuthComponent {
               );
             });
             // Redirect to home or dashboard
-            this.router.navigate(['/']);
+            this.router.navigate(['/communities']);
           } else {
             this.loginError = response.error || $localize`:@@auth.loginFailed:Login failed`;
           }
