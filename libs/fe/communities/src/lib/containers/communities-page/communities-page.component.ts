@@ -6,6 +6,8 @@ import { CommunityFormComponent } from '../../components/community-form/communit
 import { Community } from '@nx-angular-express/shared';
 import { ToastService } from '@nx-angular-express/shared-components';
 import { take } from 'rxjs';
+import { CommunityContextService } from '../../services/community-context.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'shared-communities-page',
@@ -18,6 +20,8 @@ import { take } from 'rxjs';
 export class CommunitiesPageComponent {
   private api = inject(CommunitiesApi);
   private toast = inject(ToastService);
+  private context = inject(CommunityContextService);
+  private router = inject(Router);
 
   readonly loading = signal(false);
   readonly communities = signal<Community[]>([]);
@@ -32,12 +36,18 @@ export class CommunitiesPageComponent {
       next: (res) => {
         this.communities.set(res.data || []);
         this.loading.set(false);
+        this.context.clear();
       },
       error: () => {
         this.toast.error('Failed to load communities', 'Please try again');
         this.loading.set(false);
       },
     });
+  }
+
+  selectCommunity(community: Community): void {
+    this.context.setActive(community);
+    this.router.navigate(['/communities', community.id]);
   }
 
   createCommunity(event: { body: CreateCommunityRequest; file?: File }): void {

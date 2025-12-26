@@ -29,6 +29,10 @@ export class CommunitiesApi {
     return this.http.post<HttpResponse<Community>>('/api/communities', body);
   }
 
+  get(id: string): Observable<HttpResponse<Community>> {
+    return this.http.get<HttpResponse<Community>>(`/api/communities/${id}`);
+  }
+
   update(id: string, body: UpdateCommunityRequest): Observable<HttpResponse<Community>> {
     return this.http.put<HttpResponse<Community>>(`/api/communities/${id}`, body);
   }

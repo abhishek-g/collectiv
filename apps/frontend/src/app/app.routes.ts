@@ -19,8 +19,8 @@ export const appRoutes: Route[] = [
     path: 'communities',
     canActivate: [authGuard],
     data: { redirectAuthenticatedTo: '/communities' },
-    loadComponent: () =>
-      import('@nx-angular-express/communities').then((m) => m.CommunitiesPageComponent),
+    loadChildren: () =>
+      import('@nx-angular-express/communities').then((m) => m.communitiesRoutes),
   },
   {
     path: 'profile',

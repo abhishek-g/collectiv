@@ -8,7 +8,7 @@ import { AuthService } from '../services/auth.service';
  * - Else if token missing and route is not 'auth' -> redirect to /auth
  * - Else allow
  */
-export const authGuard: CanActivateFn = (route, _state): boolean | UrlTree => {
+export const authGuard: CanActivateFn = (route): boolean | UrlTree => {
   const authService = inject(AuthService);
   const router = inject(Router);
 

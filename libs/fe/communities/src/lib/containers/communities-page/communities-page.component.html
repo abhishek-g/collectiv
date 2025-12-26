@@ -26,7 +26,10 @@
         <span class="text-muted" i18n="@@communities.loading">Loading...</span>
       </div>
       } @else {
-      <shared-communities-list [communities]="communities()"></shared-communities-list>
+        <shared-communities-list
+          [communities]="communities()"
+          (select)="selectCommunity($event)"
+        ></shared-communities-list>
       }
     </div>
   </div>

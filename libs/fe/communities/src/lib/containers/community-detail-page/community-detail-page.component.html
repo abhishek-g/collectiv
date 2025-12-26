@@ -1,0 +1,29 @@
+<div class="container py-4">
+  @if (loading()) {
+    <div class="d-flex align-items-center gap-2">
+      <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
+      <span class="text-muted" i18n="@@communities.loadingCommunity">Loading community...</span>
+    </div>
+  } @else if (community()) {
+    <div class="mb-3">
+      <h2 class="mb-1">{{ community()?.name }}</h2>
+      <p class="text-muted mb-2">{{ community()?.description }}</p>
+      <span class="badge" [ngClass]="community()?.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+        {{ community()?.visibility | titlecase }}
+      </span>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <p class="mb-0 text-muted" i18n="@@communities.detail.placeholder">
+          Members, tournaments, and chat will appear here.
+        </p>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-warning" role="alert" i18n="@@communities.notFound">
+      Community not found.
+    </div>
+  }
+</div>
+

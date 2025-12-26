@@ -1,6 +1,6 @@
 <div class="d-flex flex-column" style="min-height: 100vh;">
   @if (isLoggedIn()) {
-    <shared-topbar [title]="title" (signOut)="onSignOut()"></shared-topbar>
+    <shared-topbar [title]="activeCommunityName || title" (signOut)="onSignOut()"></shared-topbar>
     <div class="d-flex flex-grow-1">
       <shared-sidebar [heading]="'Navigation'" [items]="navItems"></shared-sidebar>
       <div class="flex-grow-1 p-3">
