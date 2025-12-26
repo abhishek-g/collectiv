@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+/**
+ * Bundle API function with esbuild to resolve TypeScript path aliases
+ * This script bundles api/index.ts into dist/api/index.js with all path aliases resolved
+ */
+
+const esbuild = require('esbuild');
+const path = require('path');
+const fs = require('fs');
+
+const rootDir = path.resolve(__dirname, '..');
+const apiDir = path.join(rootDir, 'api');
+const distApiDir = path.join(rootDir, 'dist', 'api');
+const outputFile = path.join(distApiDir, 'index.js');
+
+// Ensure dist/api directory exists
+if (!fs.existsSync(distApiDir)) {
+  fs.mkdirSync(distApiDir, { recursive: true });
+}
+
+console.log('📦 Bundling API function with esbuild...');
+console.log(`   Entry: ${path.join(apiDir, 'index.ts')}`);
+console.log(`   Output: ${outputFile}`);
+
+esbuild
+  .build({
+    entryPoints: [path.join(apiDir, 'index.ts')],
+    bundle: true,
+    platform: 'node',
+    target: 'node20',
+    format: 'cjs', // CommonJS for better Vercel compatibility
+    outfile: outputFile,
+    // External dependencies that should not be bundled (provided by Vercel runtime)
+    external: [
+      'express',
+      'cors',
+      'dotenv',
+      'mysql2',
+      'bcrypt',
+      'jsonwebtoken',
+      'multer',
+      'path',
+      'fs',
+      'crypto',
+    ],
+    // Resolve path aliases using tsconfig paths
+    alias: {
+      '@nx-angular-express/shared': path.join(rootDir, 'libs/shared/src/index.ts'),
+      '@nx-angular-express/user-service': path.join(rootDir, 'libs/be/user-service/src/index.ts'),
+      '@nx-angular-express/shared-components': path.join(rootDir, 'libs/fe/shared-components/src/index.ts'),
+      '@nx-angular-express/community-service': path.join(rootDir, 'libs/be/community-service/src/index.ts'),
+      '@nx-angular-express/profile': path.join(rootDir, 'libs/fe/profile/src/index.ts'),
+    },
+    tsconfig: path.join(apiDir, 'tsconfig.json'),
+    logLevel: 'info',
+    minify: false, // Keep readable for debugging
+    sourcemap: true,
+  })
+  .then(() => {
+    console.log('✅ API function bundled successfully');
+  })
+  .catch((error) => {
+    console.error('❌ Failed to bundle API function:', error);
+    process.exit(1);
+  });
+

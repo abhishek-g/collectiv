@@ -46,3 +46,7 @@ Thumbs.db
 __screenshots__/
 
 vitest.config.*.timestamp*
+
+# Vercel API bundle (generated during build, already covered by dist/)
+# api/index.js
+# api/index.js.map

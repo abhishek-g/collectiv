@@ -2,8 +2,11 @@
  * Vercel Serverless Function Entry Point
  * This file wraps the Express app for Vercel's serverless environment
  *
- * For Vercel, we recreate the Express app here since the backend
- * is bundled into a single main.js file
+ * IMPORTANT: This file is bundled by esbuild (via scripts/bundle-api.js) during the build process.
+ * The bundled output (api/index.js) resolves all TypeScript path aliases at build time,
+ * ensuring they work correctly in Vercel's serverless runtime.
+ *
+ * Path aliases are resolved via esbuild's alias configuration, not at runtime.
  */
 
 import express from 'express';
@@ -11,8 +14,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import path from 'path';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
-// Import routes - Vercel will compile TypeScript, so we import from source
-// The controller uses path aliases which will be resolved by Vercel's TypeScript compiler
+// Import routes - these will be bundled by esbuild with path aliases resolved
 import userRoutes from '../apps/backend/src/routes/user.routes';
 import communityRoutes from '../apps/backend/src/routes/community.routes';
 
