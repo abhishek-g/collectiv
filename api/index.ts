@@ -9,6 +9,7 @@
 import express from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
+import path from 'path';
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
 // Import routes - Vercel will compile TypeScript, so we import from source
 // The controller uses path aliases which will be resolved by Vercel's TypeScript compiler
@@ -88,6 +89,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Serve uploaded community images (local persistence)
+const communityImagesPath = path.join(process.cwd(), 'apps/backend/src/assets/community-images');
+app.use('/assets/community-images', express.static(communityImagesPath));
 
 // Health check endpoints
 app.get('/api', (req, res) => {
