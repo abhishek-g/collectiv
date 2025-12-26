@@ -122,15 +122,23 @@ async function initializeDatabase() {
   if (!dbInitialized) {
     try {
       console.log('🔄 Starting database initialization...');
-      // Log actual config being used (from database.ts)
+      // Log environment variables to help debug
+      const hasMysqlUrl = !!process.env['MYSQL_URL'];
       const dbHost = process.env['DB_HOST'] || (process.env['MYSQLHOST'] && !process.env['MYSQLHOST'].includes('.railway.internal') ? process.env['MYSQLHOST'] : 'not set');
-      console.log('📊 DB Config:', {
-        host: dbHost,
+      console.log('📊 DB Config Sources:', {
+        'MYSQL_URL': hasMysqlUrl ? '✅ Set (will be parsed)' : '❌ Not set',
+        'DB_HOST': process.env['DB_HOST'] || 'not set',
+        'MYSQLHOST': process.env['MYSQLHOST'] || 'not set',
+        'Final host': dbHost,
         port: process.env['DB_PORT'] || process.env['MYSQLPORT'] || 'not set',
         user: process.env['DB_USER'] || process.env['MYSQLUSER'] || 'not set',
         database: process.env['DB_NAME'] || process.env['MYSQLDATABASE'] || 'not set',
       });
-      console.log('⚠️  Note: If host contains ".railway.internal", use DB_HOST with Railway\'s public hostname instead');
+      if (hasMysqlUrl) {
+        console.log('✅ Using MYSQL_URL (contains public hostname)');
+      } else if (process.env['MYSQLHOST']?.includes('.railway.internal')) {
+        console.log('⚠️  MYSQLHOST contains ".railway.internal" - will be ignored. Set DB_HOST or MYSQL_URL with public hostname.');
+      }
 
       await createDatabaseIfNotExists();
       console.log('✅ Database created/verified');
