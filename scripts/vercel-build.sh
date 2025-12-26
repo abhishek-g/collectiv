@@ -20,10 +20,8 @@ echo "📋 Copying migrations..."
 mkdir -p dist/libs/be/user-service/src/lib/database
 cp -r libs/be/user-service/src/lib/database/migrations dist/libs/be/user-service/src/lib/database/
 
-# Bundle API function with esbuild to resolve path aliases
-# Outputs directly to api/index.js so Vercel can detect it
-echo "📦 Bundling API function..."
-node scripts/bundle-api.js
+# Note: api/index.ts is compiled by Vercel automatically
+# No bundling needed - we use relative imports instead of path aliases
 
 echo "✅ Vercel build completed successfully"
 
