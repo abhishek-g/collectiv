@@ -11,10 +11,14 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import path from 'path';
 // Import from backend services (moved from libs/be to apps/backend/src/services)
+console.log('📦 Importing backend services...');
 import { createDatabaseIfNotExists, testConnection, runMigrations } from '../apps/backend/src/services/user-service';
+console.log('✅ Backend services imported');
 // Import routes - these will be bundled by esbuild with path aliases resolved
+console.log('📦 Importing routes...');
 import userRoutes from '../apps/backend/src/routes/user.routes';
 import communityRoutes from '../apps/backend/src/routes/community.routes';
+console.log('✅ Routes imported');
 
 // Load environment variables
 dotenv.config();
@@ -102,19 +106,6 @@ app.use(express.urlencoded({ extended: true }));
 const communityImagesPath = path.join(process.cwd(), 'apps/backend/src/assets/community-images');
 app.use('/assets/community-images', express.static(communityImagesPath));
 
-// Health check endpoints
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to User Microservice API!' });
-});
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'user-microservice' });
-});
-
-// User routes
-app.use('/api/users', userRoutes);
-app.use('/api/communities', communityRoutes);
-
 // Initialize database on cold start (Vercel serverless)
 let dbInitialized = false;
 
@@ -168,18 +159,22 @@ async function initializeDatabase() {
   }
 }
 
-// Initialize database before handling requests
+// Initialize database before handling requests (MUST be before routes)
 app.use(async (req, res, next) => {
   // Log every request (for debugging)
   console.log(`📥 Incoming request: ${req.method} ${req.path}`);
   console.log(`🔗 Full URL: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+  console.log(`🔄 dbInitialized flag: ${dbInitialized}`);
 
   try {
+    console.log('🔄 Calling initializeDatabase()...');
     await initializeDatabase();
+    console.log('✅ initializeDatabase() completed, calling next()');
     next();
   } catch (error: unknown) {
-    const err = error as { message?: string };
+    const err = error as { message?: string; stack?: string };
     console.error('❌ Failed to initialize database:', error);
+    console.error('❌ Error stack:', err?.stack);
     res.status(500).json({
       success: false,
       error: 'Database initialization failed',
@@ -188,6 +183,19 @@ app.use(async (req, res, next) => {
     });
   }
 });
+
+// Health check endpoints (after DB init middleware)
+app.get('/api', (req, res) => {
+  res.send({ message: 'Welcome to User Microservice API!' });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', service: 'user-microservice' });
+});
+
+// User routes (after DB init middleware)
+app.use('/api/users', userRoutes);
+app.use('/api/communities', communityRoutes);
 
 // Export the Express app as a serverless function
 // Vercel's @vercel/node runtime handles Express apps automatically
