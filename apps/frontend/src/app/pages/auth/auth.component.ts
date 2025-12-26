@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,6 +13,9 @@ import { $localize } from '@angular/localize/init';
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   activeTab: 'login' | 'signup' = 'login';
 
   // Login form
@@ -30,18 +33,13 @@ export class AuthComponent {
   };
 
   // Error messages
-  loginError: string = '';
-  signupError: string = '';
-  signupSuccess: string = '';
+  loginError = '';
+  signupError = '';
+  signupSuccess = '';
 
   // Loading states
-  loginLoading: boolean = false;
-  signupLoading: boolean = false;
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) { }
+  loginLoading = false;
+  signupLoading = false;
 
   switchTab(tab: 'login' | 'signup'): void {
     this.activeTab = tab;

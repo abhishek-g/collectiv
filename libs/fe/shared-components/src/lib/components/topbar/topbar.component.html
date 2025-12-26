@@ -1,0 +1,20 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+  <div class="d-flex align-items-center w-100">
+    <span class="navbar-brand mb-0 h5" i18n="@@topbar.title">{{ title }}</span>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      @if (userName) {
+        <span class="text-white small" i18n="@@topbar.welcome">Hi, {{ userName }}</span>
+      }
+      <button
+        type="button"
+        class="btn btn-outline-light btn-sm"
+        (click)="onSignOut()"
+        i18n="@@topbar.signOut"
+      >
+        Sign out
+      </button>
+    </div>
+  </div>
+</nav>
+

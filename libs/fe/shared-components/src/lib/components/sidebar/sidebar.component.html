@@ -1,0 +1,25 @@
+<div class="sidebar bg-light border-end">
+  @if (heading) {
+    <div class="sidebar-header px-3 py-2 border-bottom">
+      <span class="fw-semibold" i18n="@@sidebar.heading">{{ heading }}</span>
+    </div>
+  }
+  <ul class="nav flex-column py-2">
+    @for (item of items; track item.label) {
+      <li class="nav-item">
+        <a
+          class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [attr.aria-label]="item.ariaLabel || item.label"
+        >
+          @if (item.icon) {
+            <i [class]="item.icon"></i>
+          }
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</div>
+

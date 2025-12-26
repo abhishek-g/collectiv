@@ -1,1 +1,9 @@
-<router-outlet></router-outlet>
+<div class="d-flex flex-column" style="min-height: 100vh;">
+  <shared-topbar [title]="title" (signOut)="null"></shared-topbar>
+  <div class="d-flex flex-grow-1">
+    <shared-sidebar [heading]="'Navigation'" [items]="navItems"></shared-sidebar>
+    <div class="flex-grow-1 p-3">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

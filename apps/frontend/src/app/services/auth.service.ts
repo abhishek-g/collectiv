@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
+import { HttpResponse } from '@nx-angular-express/shared';
 import { UserResponse, LoginUserInfo } from '@nx-angular-express/user-service';
 import { environment } from '../../environments/environment';
 
@@ -28,7 +28,7 @@ export interface LoginResponse {
 export class AuthService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
   login(credentials: LoginRequest): Observable<HttpResponse<LoginResponse>> {
     return this.http.post<HttpResponse<LoginResponse>>(
