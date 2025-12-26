@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function Entry Point
  * This file wraps the Express app for Vercel's serverless environment
- * 
+ *
  * For Vercel, we recreate the Express app here since the backend
  * is bundled into a single main.js file
  */
@@ -26,28 +26,28 @@ const app = express();
 // For Vercel, frontend and API are on the same domain, so we need to allow the Vercel domain
 const getAllowedOrigins = (): string[] => {
   const origins: string[] = [];
-  
+
   // Add explicit FRONTEND_URL if set
   if (process.env['FRONTEND_URL']) {
     origins.push(process.env['FRONTEND_URL']);
   }
-  
+
   // Add Vercel URLs (automatically provided by Vercel)
   if (process.env['VERCEL_URL']) {
     origins.push(`https://${process.env['VERCEL_URL']}`);
   }
-  
+
   // Add preview/branch URLs
   if (process.env['VERCEL_BRANCH_URL']) {
     origins.push(`https://${process.env['VERCEL_BRANCH_URL']}`);
   }
-  
+
   // In development, allow localhost
   if (process.env['NODE_ENV'] !== 'production') {
     origins.push('http://localhost:4200');
     origins.push('http://localhost:3000');
   }
-  
+
   return origins;
 };
 
@@ -59,7 +59,7 @@ app.use(cors({
     if (!origin) {
       return callback(null, true);
     }
-    
+
     // If no origins configured, allow all (development only)
     if (allowedOrigins.length === 0) {
       if (process.env['NODE_ENV'] !== 'production') {
@@ -67,7 +67,7 @@ app.use(cors({
       }
       return callback(new Error('CORS: No allowed origins configured'));
     }
-    
+
     // Check if origin matches any allowed origin
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -112,23 +112,57 @@ let dbInitialized = false;
 async function initializeDatabase() {
   if (!dbInitialized) {
     try {
+      console.log('🔄 Starting database initialization...');
+      console.log('📊 DB Config:', {
+        host: process.env['DB_HOST'] || process.env['MYSQLHOST'] || 'not set',
+        port: process.env['DB_PORT'] || process.env['MYSQLPORT'] || 'not set',
+        user: process.env['DB_USER'] || process.env['MYSQLUSER'] || 'not set',
+        database: process.env['DB_NAME'] || process.env['MYSQLDATABASE'] || 'not set',
+      });
+
       await createDatabaseIfNotExists();
+      console.log('✅ Database created/verified');
+
       await runMigrations();
+      console.log('✅ Migrations completed');
+
       await testConnection();
+      console.log('✅ Connection test passed');
+
       dbInitialized = true;
       console.log('✅ Database initialized successfully');
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string; errno?: number; sqlState?: string; sqlMessage?: string; stack?: string };
       console.error('❌ Database initialization error:', error);
-      // Don't throw - allow function to continue
-      // Database might be external or already initialized
+      console.error('❌ Error details:', {
+        message: err?.message,
+        code: err?.code,
+        errno: err?.errno,
+        sqlState: err?.sqlState,
+        sqlMessage: err?.sqlMessage,
+        stack: err?.stack,
+      });
+      // Re-throw to see the actual error in Vercel logs
+      throw error;
     }
   }
 }
 
 // Initialize database before handling requests
 app.use(async (req, res, next) => {
-  await initializeDatabase();
-  next();
+  try {
+    await initializeDatabase();
+    next();
+  } catch (error: unknown) {
+    const err = error as { message?: string };
+    console.error('❌ Failed to initialize database:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Database initialization failed',
+      message: err?.message || 'Unknown error',
+      statusCode: 500,
+    });
+  }
 });
 
 // Export the Express app as a serverless function

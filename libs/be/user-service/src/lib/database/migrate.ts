@@ -3,18 +3,31 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 async function runMigrations(): Promise<void> {
-  // Find migrations directory relative to workspace root
-  // Works in both development and production builds
+  // Find migrations directory - try multiple possible locations
+  // Works in development, production builds, and Vercel serverless
   const workspaceRoot = process.cwd();
-  const migrationsDir = path.join(
-    workspaceRoot,
-    'libs/be/user-service/src/lib/database/migrations'
-  );
+  const possiblePaths = [
+    // Vercel serverless (files in dist/)
+    path.join(workspaceRoot, 'dist/libs/be/user-service/src/lib/database/migrations'),
+    // Development and local builds
+    path.join(workspaceRoot, 'libs/be/user-service/src/lib/database/migrations'),
+    // Alternative Vercel path
+    path.join(workspaceRoot, 'libs/be/user-service/src/lib/database/migrations'),
+  ];
 
-  // Check if migrations directory exists
-  if (!fs.existsSync(migrationsDir)) {
-    console.error(`❌ Migrations directory not found: ${migrationsDir}`);
-    throw new Error('Migrations directory not found');
+  let migrationsDir: string | null = null;
+  for (const possiblePath of possiblePaths) {
+    if (fs.existsSync(possiblePath)) {
+      migrationsDir = possiblePath;
+      console.log(`📁 Found migrations directory: ${migrationsDir}`);
+      break;
+    }
+  }
+
+  if (!migrationsDir) {
+    console.error(`❌ Migrations directory not found. Tried paths:`, possiblePaths);
+    console.error(`❌ Current working directory: ${workspaceRoot}`);
+    throw new Error(`Migrations directory not found. CWD: ${workspaceRoot}`);
   }
 
   const files = fs.readdirSync(migrationsDir).sort();

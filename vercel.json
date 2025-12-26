@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm ci && npx nx build backend --configuration=production && npx nx build frontend --configuration=production",
+  "buildCommand": "npm ci && npx nx build backend --configuration=production && npx nx build frontend --configuration=production && mkdir -p dist/libs/be/user-service/src/lib/database && cp -r libs/be/user-service/src/lib/database/migrations dist/libs/be/user-service/src/lib/database/ || true",
   "outputDirectory": "dist/frontend/browser",
   "installCommand": "npm ci",
   "framework": "angular",
@@ -35,7 +35,7 @@
   "functions": {
     "api/index.ts": {
       "maxDuration": 10,
-      "includeFiles": "dist/backend/**"
+      "includeFiles": "dist/backend/**, dist/libs/be/user-service/**"
     }
   }
 }
