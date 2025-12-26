@@ -40,3 +40,13 @@ export interface UserReferral {
   referralAmount: number;
   referralDate: Date;
 };
+
+// User response type (User without password)
+export type UserResponse = Omit<User, 'password'>;
+
+// Minimal user info for login response
+export interface LoginUserInfo {
+  id: string;
+  role: UserRole;
+  status: UserStatus;
+}

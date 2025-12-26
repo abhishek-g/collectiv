@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { userService, CreateUserDto, UpdateUserDto, LoginDto } from '@nx-angular-express/user-service';
-import { HttpResponse, PaginatedHttpResponse } from '@nx-angular-express/shared';
+import { userService, CreateUserDto, UpdateUserDto, LoginDto } from '../services/user-service';
+import { HttpResponse, PaginatedHttpResponse } from '../../../../libs/shared/src/index';
 
 export class UserController {
   /**

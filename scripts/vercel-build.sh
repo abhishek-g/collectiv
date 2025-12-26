@@ -15,10 +15,10 @@ npx nx build backend --configuration=production
 echo "🏗️  Building frontend..."
 npx nx build frontend --configuration=production
 
-# Copy migrations to dist
+# Copy migrations to dist (from new location in backend app)
 echo "📋 Copying migrations..."
-mkdir -p dist/libs/be/user-service/src/lib/database
-cp -r libs/be/user-service/src/lib/database/migrations dist/libs/be/user-service/src/lib/database/
+mkdir -p dist/backend/src/services/user-service/database
+cp -r apps/backend/src/services/user-service/database/migrations dist/backend/src/services/user-service/database/
 
 # Note: api/index.ts is compiled by Vercel automatically
 # No bundling needed - we use relative imports instead of path aliases

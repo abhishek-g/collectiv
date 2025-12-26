@@ -89,10 +89,10 @@ You can also connect directly using MySQL client:
 railway connect mysql
 
 # Or use mysql client directly
-mysql -h <host> -P <port> -u <user> -p<password> <database> < libs/be/user-service/src/lib/database/migrations/001_create_users_table.sql
-mysql -h <host> -P <port> -u <user> -p<password> <database> < libs/be/user-service/src/lib/database/migrations/002_create_sessions_table.sql
-mysql -h <host> -P <port> -u <user> -p<password> <database> < libs/be/user-service/src/lib/database/migrations/003_create_communities_table.sql
-mysql -h <host> -P <port> -u <user> -p<password> <database> < libs/be/user-service/src/lib/database/migrations/004_create_community_members_table.sql
+mysql -h <host> -P <port> -u <user> -p<password> <database> < apps/backend/src/services/user-service/database/migrations/001_create_users_table.sql
+mysql -h <host> -P <port> -u <user> -p<password> <database> < apps/backend/src/services/user-service/database/migrations/002_create_sessions_table.sql
+mysql -h <host> -P <port> -u <user> -p<password> <database> < apps/backend/src/services/user-service/database/migrations/003_create_communities_table.sql
+mysql -h <host> -P <port> -u <user> -p<password> <database> < apps/backend/src/services/user-service/database/migrations/004_create_community_members_table.sql
 ```
 
 ---

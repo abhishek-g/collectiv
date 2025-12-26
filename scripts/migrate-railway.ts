@@ -41,15 +41,22 @@ async function runMigrations(): Promise<void> {
     console.log(`🔌 Connected to MySQL at ${dbConfig.host}:${dbConfig.port}`);
     console.log(`📦 Database: ${dbConfig.database}`);
 
-    // Find migrations directory
+    // Find migrations directory (try new location first, then fallback to old)
     const workspaceRoot = process.cwd();
-    const migrationsDir = path.join(
-      workspaceRoot,
-      'libs/be/user-service/src/lib/database/migrations'
-    );
+    const possiblePaths = [
+      path.join(workspaceRoot, 'apps/backend/src/services/user-service/database/migrations'), // Current location
+    ];
+    
+    let migrationsDir: string | null = null;
+    for (const possiblePath of possiblePaths) {
+      if (fs.existsSync(possiblePath)) {
+        migrationsDir = possiblePath;
+        break;
+      }
+    }
 
-    if (!fs.existsSync(migrationsDir)) {
-      throw new Error(`Migrations directory not found: ${migrationsDir}`);
+    if (!migrationsDir) {
+      throw new Error(`Migrations directory not found. Tried: ${possiblePaths.join(', ')}`);
     }
 
     const files = fs.readdirSync(migrationsDir).sort();

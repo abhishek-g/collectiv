@@ -6,7 +6,7 @@ import express from 'express';
 import * as path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createDatabaseIfNotExists, testConnection, runMigrations } from '@nx-angular-express/user-service';
+import { createDatabaseIfNotExists, testConnection, runMigrations } from './services/user-service';
 import userRoutes from './routes/user.routes';
 import communityRoutes from './routes/community.routes';
 

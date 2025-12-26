@@ -1,4 +1,4 @@
-import { User, UserRole, UserStatus } from '@nx-angular-express/shared';
+import { User, UserRole, UserStatus } from '../../../../../../libs/shared/src/index';
 import { RowDataPacket } from 'mysql2';
 
 export interface UserRow extends RowDataPacket {
@@ -55,12 +55,7 @@ export interface LoginDto {
   password: string;
 }
 
-export type UserResponse = Omit<User, 'password'>;
-
-// Minimal user info for login response
-export interface LoginUserInfo {
-  id: string;
-  role: UserRole;
-  status: UserStatus;
-}
+// UserResponse and LoginUserInfo are now exported from libs/shared
+// Re-export for backward compatibility
+export type { UserResponse, LoginUserInfo } from '../../../../../../libs/shared/src/index';
 

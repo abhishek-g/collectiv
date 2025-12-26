@@ -4,8 +4,8 @@ import {
   Community,
   CommunityMember,
   CommunityVisibility,
-} from '@nx-angular-express/shared';
-import { pool } from '@nx-angular-express/user-service';
+} from '../../../../../../libs/shared/src/index';
+import { pool } from '../../user-service/config/database';
 import { AddMemberDto, CreateCommunityDto, UpdateCommunityDto } from '../dto/community.dto';
 
 type CommunityRow = RowDataPacket & {

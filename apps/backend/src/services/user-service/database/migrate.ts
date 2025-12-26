@@ -8,11 +8,9 @@ async function runMigrations(): Promise<void> {
   const workspaceRoot = process.cwd();
   const possiblePaths = [
     // Vercel serverless (files in dist/)
-    path.join(workspaceRoot, 'dist/libs/be/user-service/src/lib/database/migrations'),
+    path.join(workspaceRoot, 'dist/backend/src/services/user-service/database/migrations'),
     // Development and local builds
-    path.join(workspaceRoot, 'libs/be/user-service/src/lib/database/migrations'),
-    // Alternative Vercel path
-    path.join(workspaceRoot, 'libs/be/user-service/src/lib/database/migrations'),
+    path.join(workspaceRoot, 'apps/backend/src/services/user-service/database/migrations'),
   ];
 
   let migrationsDir: string | null = null;

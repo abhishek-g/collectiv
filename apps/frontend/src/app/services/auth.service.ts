@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpResponse } from '@nx-angular-express/shared';
-import { UserResponse, LoginUserInfo } from '@nx-angular-express/user-service';
+import { UserResponse, LoginUserInfo } from '@nx-angular-express/shared';
 import { environment } from '../../environments/environment';
 
 export interface LoginRequest {

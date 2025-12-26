@@ -10,8 +10,8 @@ import express from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import path from 'path';
-// Use relative import instead of path alias for Vercel compatibility
-import { createDatabaseIfNotExists, testConnection, runMigrations } from '../libs/be/user-service/src/index';
+// Import from backend services (moved from libs/be to apps/backend/src/services)
+import { createDatabaseIfNotExists, testConnection, runMigrations } from '../apps/backend/src/services/user-service';
 // Import routes - these will be bundled by esbuild with path aliases resolved
 import userRoutes from '../apps/backend/src/routes/user.routes';
 import communityRoutes from '../apps/backend/src/routes/community.routes';

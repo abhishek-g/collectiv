@@ -1,4 +1,4 @@
-import { CommunityVisibility, CommunityRole } from '@nx-angular-express/shared';
+import { CommunityVisibility, CommunityRole } from '../../../../../../libs/shared/src/index';
 
 export interface CreateCommunityDto {
   name: string;
