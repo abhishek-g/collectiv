@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { CommunitiesApi, CreateCommunityRequest } from '../../services/communities.api';
+import { CommunitiesApi, CreateCommunityRequest, UpdateCommunityRequest } from '../../services/communities.api';
 import { CommunityFormComponent } from '../../components/community-form/community-form.component';
 import { ToastService } from '@nx-angular-express/shared-components';
 import { take } from 'rxjs';
@@ -21,10 +21,17 @@ export class CreateCommunityPageComponent {
 
   readonly loading = signal(false);
 
-  createCommunity(event: { body: CreateCommunityRequest; file?: File }): void {
-    const { body, file } = event;
+  createCommunity(event: { body: CreateCommunityRequest | UpdateCommunityRequest; file?: File }): void {
+    // Convert to CreateCommunityRequest (form emits union type, but create API requires name)
+    const createBody: CreateCommunityRequest = {
+      name: event.body.name!,
+      description: event.body.description,
+      visibility: event.body.visibility,
+      imageUrl: event.body.imageUrl,
+    };
+    const { file } = event;
     this.loading.set(true);
-    this.api.create(body).pipe(take(1)).subscribe({
+    this.api.create(createBody).pipe(take(1)).subscribe({
       next: (res) => {
         const created = res.data;
         if (!created) {
