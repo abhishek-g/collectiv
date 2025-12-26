@@ -1,36 +1,28 @@
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0" i18n="@@communities.title">
       <i class="fi fi-br-users me-2"></i>
       Communities
     </h2>
-    <div class="ms-auto">
-      <!-- Placeholder for future actions (filter/sort) -->
-    </div>
+    <button 
+      type="button" 
+      class="btn btn-primary" 
+      routerLink="/communities/create"
+      i18n="@@communities.createButton">
+      <i class="fi fi-rr-plus me-2"></i>
+      Create Community
+    </button>
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-light fw-semibold" i18n="@@communities.createHeading">Create community</div>
-        <div class="card-body">
-          <shared-community-form (save)="createCommunity($event)"></shared-community-form>
-        </div>
-      </div>
+  @if (loading()) {
+    <div class="d-flex align-items-center gap-2">
+      <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
+      <span class="text-muted" i18n="@@communities.loading">Loading...</span>
     </div>
-
-    <div class="col-lg-8">
-      @if (loading()) {
-      <div class="d-flex align-items-center gap-2">
-        <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
-        <span class="text-muted" i18n="@@communities.loading">Loading...</span>
-      </div>
-      } @else {
-        <shared-communities-list
-          [communities]="communities()"
-          (select)="selectCommunity($event)"
-        ></shared-communities-list>
-      }
-    </div>
-  </div>
+  } @else {
+    <shared-communities-list
+      [communities]="communities()"
+      (select)="selectCommunity($event)"
+    ></shared-communities-list>
+  }
 </div>

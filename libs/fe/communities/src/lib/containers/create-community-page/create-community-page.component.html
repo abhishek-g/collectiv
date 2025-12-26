@@ -1,0 +1,32 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0" i18n="@@communities.create.title">Create New Community</h2>
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary" 
+          (click)="cancel()"
+          [disabled]="loading()"
+          i18n="@@communities.create.cancel">
+          Cancel
+        </button>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          @if (loading()) {
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="spinner-border text-primary" role="status" aria-label="Creating community">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span class="text-muted" i18n="@@communities.create.creating">Creating community...</span>
+            </div>
+          }
+          <shared-community-form (save)="createCommunity($event)"></shared-community-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

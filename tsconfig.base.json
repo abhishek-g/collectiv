@@ -21,7 +21,9 @@
         "libs/fe/shared-components/src/index.ts"
       ],
       "@nx-angular-express/profile": ["libs/fe/profile/src/index.ts"],
-      "@nx-angular-express/communities": ["libs/fe/communities/src/index.ts"]
+      "@nx-angular-express/communities": ["libs/fe/communities/src/index.ts"],
+      "@nx-angular-express/community-service": ["libs/be/community-service/src/index.ts"],
+
     }
   },
   "exclude": ["node_modules", "tmp"]

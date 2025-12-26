@@ -71,5 +71,31 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
+
+  // Decode JWT payload (unsafe decode without signature verification)
+  getTokenPayload<T = any>(): T | null {
+    const token = this.getToken();
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    try {
+      const payload = JSON.parse(atob(parts[1]));
+      return payload as T;
+    } catch {
+      return null;
+    }
+  }
+
+  // Get user ID from JWT payload
+  getUserId(): string | null {
+    const payload = this.getTokenPayload<{ userId?: string }>();
+    return payload?.userId ?? null;
+  }
+
+  // Get role from JWT payload
+  getRole(): string | null {
+    const payload = this.getTokenPayload<{ role?: string }>();
+    return payload?.role ?? null;
+  }
 }
 

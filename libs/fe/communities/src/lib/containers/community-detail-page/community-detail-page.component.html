@@ -1,29 +1,47 @@
 <div class="container py-4">
   @if (loading()) {
-    <div class="d-flex align-items-center gap-2">
-      <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
-      <span class="text-muted" i18n="@@communities.loadingCommunity">Loading community...</span>
-    </div>
-  } @else if (community()) {
-    <div class="mb-3">
-      <h2 class="mb-1">{{ community()?.name }}</h2>
-      <p class="text-muted mb-2">{{ community()?.description }}</p>
-      <span class="badge" [ngClass]="community()?.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
-        {{ community()?.visibility | titlecase }}
+  <div class="d-flex align-items-center gap-2">
+    <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
+    <span class="text-muted" i18n="@@communities.loadingCommunity">Loading community...</span>
+  </div>
+  } @else if (community(); as comm) {
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div class="flex-grow-1">
+      @if (comm.imageUrl) {
+      <div class="mb-3">
+        <img [src]="comm.imageUrl" alt="" class="rounded shadow-sm"
+          style="max-width: 100%; height: auto; object-fit: cover;" />
+      </div>
+      }
+      <h2 class="mb-1">{{ comm.name }}</h2>
+      <p class="text-muted mb-2">{{ comm.description }}</p>
+      <span class="badge"
+        [ngClass]="comm.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+        {{ comm.visibility | titlecase }}
       </span>
     </div>
+    @if (canEdit()) {
+      <button 
+        type="button" 
+        class="btn btn-outline-primary"
+        [routerLink]="['/communities', comm.id, 'edit']"
+        i18n="@@communities.edit.button">
+        <i class="fi fi-rr-edit me-2"></i>
+        Edit
+      </button>
+    }
+  </div>
 
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <p class="mb-0 text-muted" i18n="@@communities.detail.placeholder">
-          Members, tournaments, and chat will appear here.
-        </p>
-      </div>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <p class="mb-0 text-muted" i18n="@@communities.detail.placeholder">
+        Members, tournaments, and chat will appear here.
+      </p>
     </div>
+  </div>
   } @else {
-    <div class="alert alert-warning" role="alert" i18n="@@communities.notFound">
-      Community not found.
-    </div>
+  <div class="alert alert-warning" role="alert" i18n="@@communities.notFound">
+    Community not found.
+  </div>
   }
 </div>
-

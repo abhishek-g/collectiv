@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CreateCommunityRequest } from '../../services/communities.api';
+import { CreateCommunityRequest, UpdateCommunityRequest } from '../../services/communities.api';
 
 @Component({
   selector: 'shared-community-form',
@@ -22,7 +22,7 @@ import { CreateCommunityRequest } from '../../services/communities.api';
 export class CommunityFormComponent implements OnChanges {
   @Input() initial: Partial<CreateCommunityRequest & { imageUrl?: string }> = {};
   @Output() save = new EventEmitter<{
-    body: CreateCommunityRequest;
+    body: CreateCommunityRequest | UpdateCommunityRequest;
     file?: File;
   }>();
 

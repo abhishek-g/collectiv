@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { communityService, CreateCommunityDto, UpdateCommunityDto, AddMemberDto } from '../../../../libs/be/community-service/src';
+import { communityService, CreateCommunityDto, UpdateCommunityDto, AddMemberDto } from '@nx-angular-express/community-service';
 import { HttpResponse, Community } from '@nx-angular-express/shared';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { upload } from '../middleware/upload.middleware';
@@ -11,6 +11,20 @@ const isOwnerOrAdmin = (community: Community, userId: string): boolean => {
 };
 
 const isOwner = (community: Community, userId: string): boolean => community.ownerId === userId;
+
+const resolveImageUrl = (req: Request, imageUrl?: string): string | undefined => {
+  if (!imageUrl) return undefined;
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  const base = `${req.protocol}://${req.get('host')}`;
+  return `${base}${imageUrl}`;
+};
+
+const withImage = (req: Request, community: Community): Community => ({
+  ...community,
+  imageUrl: resolveImageUrl(req, community.imageUrl),
+});
 
 class CommunityController {
   create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -25,9 +39,9 @@ class CommunityController {
         ownerId: userId,
       };
       const community = await communityService.createCommunity(dto);
-      const response: HttpResponse<typeof community> = {
+      const response: HttpResponse<Community> = {
         success: true,
-        data: community,
+        data: withImage(req, community),
         statusCode: 201,
         message: 'Community created',
       };
@@ -44,9 +58,10 @@ class CommunityController {
 
   list = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
     const communities = await communityService.listCommunities();
+    const formatted = communities.map((c) => withImage(res.req, c));
     const response: HttpResponse<typeof communities> = {
       success: true,
-      data: communities,
+      data: formatted,
       statusCode: 200,
     };
     res.status(200).json(response);
@@ -55,9 +70,9 @@ class CommunityController {
   getById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const community = await communityService.getCommunity(req.params.id);
-      const response: HttpResponse<typeof community> = {
+      const response: HttpResponse<Community> = {
         success: true,
-        data: community,
+        data: withImage(req, community),
         statusCode: 200,
       };
       res.status(200).json(response);
@@ -85,9 +100,9 @@ class CommunityController {
       }
       const dto: UpdateCommunityDto = req.body;
       const updated = await communityService.updateCommunity(req.params.id, dto);
-      const response: HttpResponse<typeof community> = {
+      const response: HttpResponse<Community> = {
         success: true,
-        data: updated,
+        data: withImage(req, updated),
         statusCode: 200,
         message: 'Community updated',
       };
@@ -145,9 +160,9 @@ class CommunityController {
       }
       const dto: AddMemberDto = req.body;
       const updated = await communityService.addMember(req.params.id, dto);
-      const response: HttpResponse<typeof community> = {
+      const response: HttpResponse<Community> = {
         success: true,
-        data: updated,
+        data: withImage(req, updated),
         statusCode: 200,
         message: 'Member added',
       };
@@ -176,9 +191,9 @@ class CommunityController {
         return;
       }
       const updated = await communityService.removeMember(req.params.id, userId);
-      const response: HttpResponse<typeof community> = {
+      const response: HttpResponse<Community> = {
         success: true,
-        data: updated,
+        data: withImage(req, updated),
         statusCode: 200,
         message: 'Member removed',
       };
@@ -215,9 +230,9 @@ class CommunityController {
 
         const relativePath = path.join('/assets/community-images', req.file.filename);
         const updated = await communityService.updateCommunity(req.params.id, { imageUrl: relativePath });
-        const response: HttpResponse<typeof updated> = {
+        const response: HttpResponse<Community> = {
           success: true,
-          data: updated,
+          data: withImage(req, updated),
           statusCode: 200,
           message: 'Community image updated',
         };
