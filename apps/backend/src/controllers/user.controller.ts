@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { userService, CreateUserDto, UpdateUserDto, LoginDto } from '../services/user-service';
-import { HttpResponse, PaginatedHttpResponse } from '../../../../libs/shared/src/index';
+import { HttpResponse, PaginatedHttpResponse } from '../types';
 
 export class UserController {
   /**

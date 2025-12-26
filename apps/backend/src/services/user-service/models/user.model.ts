@@ -1,4 +1,4 @@
-import { User, UserRole, UserStatus } from '../../../../../../libs/shared/src/index';
+import { User, UserRole, UserStatus } from '../../../types';
 import { RowDataPacket } from 'mysql2';
 
 export interface UserRow extends RowDataPacket {
@@ -55,7 +55,7 @@ export interface LoginDto {
   password: string;
 }
 
-// UserResponse and LoginUserInfo are now exported from libs/shared
+// UserResponse and LoginUserInfo are now in backend types
 // Re-export for backward compatibility
-export type { UserResponse, LoginUserInfo } from '../../../../../../libs/shared/src/index';
+export type { UserResponse, LoginUserInfo } from '../../../types';
 

@@ -4,7 +4,7 @@ import {
   Community,
   CommunityMember,
   CommunityVisibility,
-} from '../../../../../../libs/shared/src/index';
+} from '../../../types';
 import { pool } from '../../user-service/config/database';
 import { AddMemberDto, CreateCommunityDto, UpdateCommunityDto } from '../dto/community.dto';
 

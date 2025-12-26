@@ -1,4 +1,4 @@
-import { CommunityVisibility, CommunityRole } from '../../../../../../libs/shared/src/index';
+import { CommunityVisibility, CommunityRole } from '../../../types';
 
 export interface CreateCommunityDto {
   name: string;

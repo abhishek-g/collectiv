@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { RowDataPacket } from 'mysql2';
 import { UserRow, CreateUserDto, UpdateUserDto, LoginDto, UserResponse, LoginUserInfo } from '../models/user.model';
-import { UserRole, UserStatus } from '../../../../../../libs/shared/src/index';
+import { UserRole, UserStatus } from '../../../types';
 
 export class UserService {
   /**
