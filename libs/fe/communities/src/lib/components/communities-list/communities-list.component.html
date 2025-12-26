@@ -1,0 +1,47 @@
+<div class="row g-3">
+  @if (communities.length === 0) {
+    <div class="col-12">
+      <div class="alert alert-info" role="alert" i18n="@@communities.empty">
+        No communities yet.
+      </div>
+    </div>
+  } @else {
+    @for (community of communities; track community.id) {
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-start gap-2">
+              <div class="thumb rounded bg-light d-flex align-items-center justify-content-center">
+                @if (community.imageUrl) {
+                  <img
+                    [src]="community.imageUrl"
+                    alt=""
+                    class="rounded"
+                    style="width: 48px; height: 48px; object-fit: cover;"
+                  />
+                } @else {
+                  <span class="text-muted fw-semibold">{{ community.name | slice:0:2 | uppercase }}</span>
+                }
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="card-title mb-1">{{ community.name }}</h5>
+                <span class="badge" [ngClass]="community.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                  {{ community.visibility | titlecase }}
+                </span>
+              </div>
+            </div>
+            @if (community.description) {
+              <p class="card-text mt-2 text-muted">{{ community.description }}</p>
+            }
+          </div>
+          <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+            <small class="text-muted">
+              {{ community.members.length }} members
+            </small>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
+

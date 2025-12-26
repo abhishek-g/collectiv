@@ -1,0 +1,55 @@
+<form (ngSubmit)="onSubmit()" class="vstack gap-3">
+  <div>
+    <label class="form-label" i18n="@@communities.form.name">Name</label>
+    <input
+      class="form-control"
+      name="name"
+      [(ngModel)]="model.name"
+      required
+      maxlength="255"
+      i18n-placeholder="@@communities.form.namePh"
+      placeholder="Enter community name"
+    />
+  </div>
+
+  <div>
+    <label class="form-label" i18n="@@communities.form.description">Description</label>
+    <textarea
+      class="form-control"
+      name="description"
+      [(ngModel)]="model.description"
+      rows="3"
+      maxlength="500"
+      i18n-placeholder="@@communities.form.descriptionPh"
+      placeholder="Describe this community"
+    ></textarea>
+  </div>
+
+  <div>
+    <label class="form-label" i18n="@@communities.form.visibility">Visibility</label>
+    <select class="form-select" name="visibility" [(ngModel)]="model.visibility">
+      <option value="public" i18n="@@communities.form.public">Public</option>
+      <option value="private" i18n="@@communities.form.private">Private</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" i18n="@@communities.form.image">Image (optional)</label>
+    <input
+      type="file"
+      accept="image/*"
+      class="form-control"
+      (change)="onFileSelected($event)"
+    />
+    @if (model.imageUrl) {
+      <small class="text-muted d-block mt-1" i18n="@@communities.form.existingImage">
+        An image is already set; uploading a new one will replace it.
+      </small>
+    }
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <button type="submit" class="btn btn-primary" i18n="@@communities.form.save">Save</button>
+  </div>
+</form>
+

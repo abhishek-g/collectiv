@@ -20,7 +20,8 @@
       "@nx-angular-express/shared-components": [
         "libs/fe/shared-components/src/index.ts"
       ],
-      "@nx-angular-express/profile": ["libs/fe/profile/src/index.ts"]
+      "@nx-angular-express/profile": ["libs/fe/profile/src/index.ts"],
+      "@nx-angular-express/communities": ["libs/fe/communities/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
