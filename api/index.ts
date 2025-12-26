@@ -21,7 +21,16 @@ import communityRoutes from '../apps/backend/src/routes/community.routes';
 // Load environment variables
 dotenv.config();
 
+// Log function initialization (this should appear in Vercel logs)
+console.log('🚀 API Function initializing...');
+console.log('📅 Timestamp:', new Date().toISOString());
+console.log('🌍 Environment:', process.env['NODE_ENV'] || 'not set');
+console.log('🔗 Vercel URL:', process.env['VERCEL_URL'] || 'not set');
+
 const app = express();
+
+// Log Express app creation
+console.log('✅ Express app created');
 
 // Middleware - CORS configuration
 // When credentials: true, origin cannot be '*', must be specific origins
@@ -152,6 +161,10 @@ async function initializeDatabase() {
 
 // Initialize database before handling requests
 app.use(async (req, res, next) => {
+  // Log every request (for debugging)
+  console.log(`📥 Incoming request: ${req.method} ${req.path}`);
+  console.log(`🔗 Full URL: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+
   try {
     await initializeDatabase();
     next();
