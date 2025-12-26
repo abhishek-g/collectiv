@@ -31,11 +31,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 10,
-      "includeFiles": "dist/backend/**, dist/libs/be/user-service/**"
-    }
-  }
+  ]
 }

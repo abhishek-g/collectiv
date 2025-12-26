@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Bundle API function with esbuild to resolve TypeScript path aliases
- * This script bundles api/index.ts into dist/api/index.js with all path aliases resolved
+ * This script bundles api/index.ts into api/index.js with all path aliases resolved
+ * Outputs directly to api/ directory so Vercel can detect it as a serverless function
  */
 
 const esbuild = require('esbuild');
@@ -10,12 +11,12 @@ const fs = require('fs');
 
 const rootDir = path.resolve(__dirname, '..');
 const apiDir = path.join(rootDir, 'api');
-const distApiDir = path.join(rootDir, 'dist', 'api');
-const outputFile = path.join(distApiDir, 'index.js');
+// Output directly to api/ directory so Vercel can find it
+const outputFile = path.join(apiDir, 'index.js');
 
-// Ensure dist/api directory exists
-if (!fs.existsSync(distApiDir)) {
-  fs.mkdirSync(distApiDir, { recursive: true });
+// Ensure api directory exists
+if (!fs.existsSync(apiDir)) {
+  fs.mkdirSync(apiDir, { recursive: true });
 }
 
 console.log('📦 Bundling API function with esbuild...');
