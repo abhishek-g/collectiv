@@ -18,6 +18,5 @@
       "@nx-angular-express/profile": ["libs/fe/profile/src/index.ts"]
     }
   },
-  "include": [],
   "exclude": ["node_modules"]
 }
