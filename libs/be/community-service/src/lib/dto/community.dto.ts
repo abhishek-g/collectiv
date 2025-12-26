@@ -11,6 +11,7 @@ export interface UpdateCommunityDto {
   name?: string;
   description?: string;
   visibility?: CommunityVisibility;
+  imageUrl?: string;
 }
 
 export interface AddMemberDto {

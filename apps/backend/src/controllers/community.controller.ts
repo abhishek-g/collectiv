@@ -1,12 +1,30 @@
 import { Request, Response } from 'express';
 import { communityService, CreateCommunityDto, UpdateCommunityDto, AddMemberDto } from '@nx-angular-express/community-service';
-import { HttpResponse } from '@nx-angular-express/shared';
+import { HttpResponse, Community } from '@nx-angular-express/shared';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
+import { upload } from '../middleware/upload.middleware';
+import path from 'path';
+
+const isOwnerOrAdmin = (community: Community, userId: string): boolean => {
+  if (community.ownerId === userId) return true;
+  return community.members.some((m) => m.userId === userId && m.role === 'admin');
+};
+
+const isOwner = (community: Community, userId: string): boolean => community.ownerId === userId;
 
 class CommunityController {
-  create = (req: Request, res: Response): void => {
+  create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const dto: CreateCommunityDto = req.body;
-      const community = communityService.createCommunity(dto);
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+        return;
+      }
+      const dto: CreateCommunityDto = {
+        ...req.body,
+        ownerId: userId,
+      };
+      const community = await communityService.createCommunity(dto);
       const response: HttpResponse<typeof community> = {
         success: true,
         data: community,
@@ -24,8 +42,8 @@ class CommunityController {
     }
   };
 
-  list = (_req: Request, res: Response): void => {
-    const communities = communityService.listCommunities();
+  list = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const communities = await communityService.listCommunities();
     const response: HttpResponse<typeof communities> = {
       success: true,
       data: communities,
@@ -34,9 +52,9 @@ class CommunityController {
     res.status(200).json(response);
   };
 
-  getById = (req: Request, res: Response): void => {
+  getById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const community = communityService.getCommunity(req.params.id);
+      const community = await communityService.getCommunity(req.params.id);
       const response: HttpResponse<typeof community> = {
         success: true,
         data: community,
@@ -53,13 +71,23 @@ class CommunityController {
     }
   };
 
-  update = (req: Request, res: Response): void => {
+  update = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+        return;
+      }
+      const community = await communityService.getCommunity(req.params.id);
+      if (!isOwnerOrAdmin(community, userId)) {
+        res.status(403).json({ success: false, error: 'Forbidden', statusCode: 403 });
+        return;
+      }
       const dto: UpdateCommunityDto = req.body;
-      const community = communityService.updateCommunity(req.params.id, dto);
+      const updated = await communityService.updateCommunity(req.params.id, dto);
       const response: HttpResponse<typeof community> = {
         success: true,
-        data: community,
+        data: updated,
         statusCode: 200,
         message: 'Community updated',
       };
@@ -74,9 +102,19 @@ class CommunityController {
     }
   };
 
-  remove = (req: Request, res: Response): void => {
+  remove = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      communityService.deleteCommunity(req.params.id);
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+        return;
+      }
+      const community = await communityService.getCommunity(req.params.id);
+      if (!isOwner(community, userId)) {
+        res.status(403).json({ success: false, error: 'Only owner can delete community', statusCode: 403 });
+        return;
+      }
+      await communityService.deleteCommunity(req.params.id);
       const response: HttpResponse<null> = {
         success: true,
         statusCode: 200,
@@ -93,13 +131,23 @@ class CommunityController {
     }
   };
 
-  addMember = (req: Request, res: Response): void => {
+  addMember = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+        return;
+      }
+      const community = await communityService.getCommunity(req.params.id);
+      if (!isOwnerOrAdmin(community, userId)) {
+        res.status(403).json({ success: false, error: 'Forbidden', statusCode: 403 });
+        return;
+      }
       const dto: AddMemberDto = req.body;
-      const community = communityService.addMember(req.params.id, dto);
+      const updated = await communityService.addMember(req.params.id, dto);
       const response: HttpResponse<typeof community> = {
         success: true,
-        data: community,
+        data: updated,
         statusCode: 200,
         message: 'Member added',
       };
@@ -114,13 +162,23 @@ class CommunityController {
     }
   };
 
-  removeMember = (req: Request, res: Response): void => {
+  removeMember = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
+      const actingUser = req.user?.userId;
+      if (!actingUser) {
+        res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+        return;
+      }
       const { userId } = req.params;
-      const community = communityService.removeMember(req.params.id, userId);
+      const community = await communityService.getCommunity(req.params.id);
+      if (!isOwnerOrAdmin(community, actingUser)) {
+        res.status(403).json({ success: false, error: 'Forbidden', statusCode: 403 });
+        return;
+      }
+      const updated = await communityService.removeMember(req.params.id, userId);
       const response: HttpResponse<typeof community> = {
         success: true,
-        data: community,
+        data: updated,
         statusCode: 200,
         message: 'Member removed',
       };
@@ -134,6 +192,46 @@ class CommunityController {
       res.status(400).json(response);
     }
   };
+
+  uploadImage = [
+    upload.single('image'),
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+      try {
+        const actingUser = req.user?.userId;
+        if (!actingUser) {
+          res.status(401).json({ success: false, error: 'Unauthorized', statusCode: 401 });
+          return;
+        }
+        const community = await communityService.getCommunity(req.params.id);
+        if (!isOwner(community, actingUser)) {
+          res.status(403).json({ success: false, error: 'Only owner can update image', statusCode: 403 });
+          return;
+        }
+
+        if (!req.file) {
+          res.status(400).json({ success: false, error: 'Image file is required', statusCode: 400 });
+          return;
+        }
+
+        const relativePath = path.join('/assets/community-images', req.file.filename);
+        const updated = await communityService.updateCommunity(req.params.id, { imageUrl: relativePath });
+        const response: HttpResponse<typeof updated> = {
+          success: true,
+          data: updated,
+          statusCode: 200,
+          message: 'Community image updated',
+        };
+        res.status(200).json(response);
+      } catch (error: any) {
+        const response: HttpResponse<null> = {
+          success: false,
+          error: error?.message || 'Failed to update image',
+          statusCode: 400,
+        };
+        res.status(400).json(response);
+      }
+    },
+  ];
 }
 
 const communityController = new CommunityController();

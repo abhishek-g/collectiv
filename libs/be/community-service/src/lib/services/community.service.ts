@@ -4,99 +4,185 @@ import {
   CommunityMember,
   CommunityVisibility,
 } from '@nx-angular-express/shared';
+import { pool } from '@nx-angular-express/user-service';
 import { AddMemberDto, CreateCommunityDto, UpdateCommunityDto } from '../dto/community.dto';
 
+type CommunityRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  visibility: CommunityVisibility;
+  owner_id: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+type CommunityMemberRow = {
+  community_id: string;
+  user_id: string;
+  role: string;
+  nickname: string | null;
+  joined_at: Date;
+};
+
 export class CommunityService {
-  private communities = new Map<string, Community>();
+  private mapMembers(rows: CommunityMemberRow[]): CommunityMember[] {
+    return rows.map((row) => ({
+      userId: row.user_id,
+      role: row.role as CommunityMember['role'],
+      nickname: row.nickname ?? undefined,
+      joinedAt: row.joined_at.toISOString(),
+    }));
+  }
 
-  createCommunity(dto: CreateCommunityDto): Community {
+  private mapCommunity(row: CommunityRow, members: CommunityMember[]): Community {
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description ?? undefined,
+      imageUrl: row.image_url ?? undefined,
+      visibility: row.visibility,
+      ownerId: row.owner_id,
+      members,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    };
+  }
+
+  private async fetchCommunity(id: string): Promise<Community> {
+    const [communityRows] = await pool.query<CommunityRow[]>(
+      'SELECT * FROM communities WHERE id = ?',
+      [id]
+    );
+    if (!communityRows.length) {
+      throw new Error('Community not found');
+    }
+    const communityRow = communityRows[0];
+
+    const [memberRows] = await pool.query<CommunityMemberRow[]>(
+      'SELECT * FROM community_members WHERE community_id = ?',
+      [id]
+    );
+    return this.mapCommunity(communityRow, this.mapMembers(memberRows));
+  }
+
+  private async fetchCommunities(): Promise<Community[]> {
+    const [communityRows] = await pool.query<CommunityRow[]>('SELECT * FROM communities');
+    if (!communityRows.length) return [];
+
+    const ids = communityRows.map((c) => c.id);
+    const [memberRows] = await pool.query<CommunityMemberRow[]>(
+      'SELECT * FROM community_members WHERE community_id IN (?)',
+      [ids]
+    );
+
+    const memberMap = new Map<string, CommunityMember[]>();
+    memberRows.forEach((row) => {
+      const arr = memberMap.get(row.community_id) || [];
+      arr.push({
+        userId: row.user_id,
+        role: row.role as CommunityMember['role'],
+        nickname: row.nickname ?? undefined,
+        joinedAt: row.joined_at.toISOString(),
+      });
+      memberMap.set(row.community_id, arr);
+    });
+
+    return communityRows.map((row) =>
+      this.mapCommunity(row, memberMap.get(row.id) || [])
+    );
+  }
+
+  async createCommunity(dto: CreateCommunityDto): Promise<Community> {
     const id = randomUUID();
-    const now = new Date().toISOString();
     const visibility: CommunityVisibility = dto.visibility || 'public';
+    const now = new Date();
 
-    const ownerMember: CommunityMember = {
-      userId: dto.ownerId,
-      role: 'owner',
-      joinedAt: now,
-    };
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
 
-    const community: Community = {
-      id,
-      name: dto.name,
-      description: dto.description,
-      visibility,
-      ownerId: dto.ownerId,
-      members: [ownerMember],
-      createdAt: now,
-      updatedAt: now,
-    };
+      await conn.execute(
+        `INSERT INTO communities (id, name, description, visibility, owner_id, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [id, dto.name, dto.description ?? null, visibility, dto.ownerId, now, now]
+      );
 
-    this.communities.set(id, community);
-    return community;
+      await conn.execute(
+        `INSERT INTO community_members (community_id, user_id, role, nickname, joined_at)
+         VALUES (?, ?, 'owner', NULL, ?)`,
+        [id, dto.ownerId, now]
+      );
+
+      await conn.commit();
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
+
+    return this.fetchCommunity(id);
   }
 
-  listCommunities(): Community[] {
-    return Array.from(this.communities.values());
+  async listCommunities(): Promise<Community[]> {
+    return this.fetchCommunities();
   }
 
-  getCommunity(id: string): Community {
-    const community = this.communities.get(id);
-    if (!community) {
+  async getCommunity(id: string): Promise<Community> {
+    return this.fetchCommunity(id);
+  }
+
+  async updateCommunity(id: string, dto: UpdateCommunityDto): Promise<Community> {
+    await pool.execute(
+      `UPDATE communities
+       SET name = COALESCE(?, name),
+           description = COALESCE(?, description),
+           image_url = COALESCE(?, image_url),
+           visibility = COALESCE(?, visibility),
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [dto.name ?? null, dto.description ?? null, (dto as any).imageUrl ?? null, dto.visibility ?? null, id]
+    );
+
+    return this.fetchCommunity(id);
+  }
+
+  async deleteCommunity(id: string): Promise<void> {
+    const [result] = await pool.execute('DELETE FROM communities WHERE id = ?', [id]);
+    const info = result as { affectedRows?: number };
+    if (!info.affectedRows) {
       throw new Error('Community not found');
     }
-    return community;
   }
 
-  updateCommunity(id: string, dto: UpdateCommunityDto): Community {
-    const community = this.getCommunity(id);
-    const updated: Community = {
-      ...community,
-      ...dto,
-      updatedAt: new Date().toISOString(),
-    };
-    this.communities.set(id, updated);
-    return updated;
-  }
-
-  deleteCommunity(id: string): void {
-    if (!this.communities.delete(id)) {
-      throw new Error('Community not found');
-    }
-  }
-
-  addMember(id: string, dto: AddMemberDto): Community {
-    const community = this.getCommunity(id);
-    const exists = community.members.find((m) => m.userId === dto.userId);
-    if (exists) {
+  async addMember(id: string, dto: AddMemberDto): Promise<Community> {
+    // Ensure community exists
+    const community = await this.fetchCommunity(id);
+    if (community.members.some((m) => m.userId === dto.userId)) {
       throw new Error('Member already in community');
     }
-    const member: CommunityMember = {
-      userId: dto.userId,
-      role: dto.role || 'member',
-      joinedAt: new Date().toISOString(),
-    };
-    const updated: Community = {
-      ...community,
-      members: [...community.members, member],
-      updatedAt: new Date().toISOString(),
-    };
-    this.communities.set(id, updated);
-    return updated;
+
+    await pool.execute(
+      `INSERT INTO community_members (community_id, user_id, role, nickname, joined_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [id, dto.userId, dto.role || 'member', null, new Date()]
+    );
+
+    return this.fetchCommunity(id);
   }
 
-  removeMember(id: string, userId: string): Community {
-    const community = this.getCommunity(id);
-    const members = community.members.filter((m) => m.userId !== userId);
-    if (members.length === community.members.length) {
+  async removeMember(id: string, userId: string): Promise<Community> {
+    const [result] = await pool.execute(
+      'DELETE FROM community_members WHERE community_id = ? AND user_id = ?',
+      [id, userId]
+    );
+    const info = result as { affectedRows?: number };
+    if (!info.affectedRows) {
       throw new Error('Member not found in community');
     }
-    const updated: Community = {
-      ...community,
-      members,
-      updatedAt: new Date().toISOString(),
-    };
-    this.communities.set(id, updated);
-    return updated;
+    return this.fetchCommunity(id);
   }
 }
 

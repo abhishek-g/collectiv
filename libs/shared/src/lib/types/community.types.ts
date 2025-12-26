@@ -19,6 +19,7 @@ export interface Community {
   visibility: CommunityVisibility;
   ownerId: UserId;
   members: CommunityMember[];
+  imageUrl?: string;
   createdAt: string; // ISO date
   updatedAt: string; // ISO date
 }
