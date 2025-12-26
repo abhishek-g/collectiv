@@ -4,8 +4,25 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Support both Railway and custom environment variable names
+// IMPORTANT: Prioritize DB_HOST over MYSQLHOST because Railway's MYSQLHOST 
+// is set to 'mysql.railway.internal' which is only accessible from Railway's network.
+// Vercel needs the public hostname, which should be set in DB_HOST.
+const getDbHost = (): string => {
+  // Prioritize DB_HOST (public hostname for Vercel)
+  if (process.env['DB_HOST']) {
+    return process.env['DB_HOST'];
+  }
+  // Check MYSQLHOST but reject internal hostnames
+  const mysqlHost = process.env['MYSQLHOST'] || process.env['MYSQL_HOST'];
+  if (mysqlHost && !mysqlHost.includes('.railway.internal') && !mysqlHost.includes('.internal')) {
+    return mysqlHost;
+  }
+  // Fallback to localhost for local development
+  return 'localhost';
+};
+
 const dbConfig = {
-  host: process.env['DB_HOST'] || process.env['MYSQLHOST'] || process.env['MYSQL_HOST'] || 'localhost',
+  host: getDbHost(),
   port: parseInt(
     process.env['DB_PORT'] ||
     process.env['MYSQLPORT'] ||
