@@ -168,4 +168,5 @@ app.use(async (req, res, next) => {
 });
 
 // Export the Express app as a serverless function
-export default app;
+// Use CommonJS export for Vercel serverless function compatibility
+module.exports = app;
